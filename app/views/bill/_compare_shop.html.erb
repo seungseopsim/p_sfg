@@ -1,0 +1,24 @@
+<% if datas.present? %>
+<% datas.each do |key, shops| %>
+<div id="<%= "#{key}" %>"  class="tabcontent" > 					
+	<% shops.each do |sub, shop| %>
+	<li>
+		<div class="item">
+		<div class ="s_item_in1"><%= sub.first(5) %></div>	
+			<div class ="s_item_in2">
+				<%= render 'compare_shop_part', data: shop[datakey1] %>
+			</div>					
+
+			<div class ="s_item_in2">
+				<%= render 'compare_shop_part', data: shop[datakey2] %>
+			</div>	
+
+			<div class ="s_item_in2">
+				<%= render 'compare_shop_part', data: shop[datakey3] %>
+			</div>
+		</div>
+	</li>
+	<% end %>
+</div>
+<% end %>
+<% end %>

@@ -1,0 +1,17 @@
+
+<h1>홀딩스 보고방</h1>
+
+<%= render 'alertmsg' %>
+
+<ul class="list-group">
+	<% if @reportrooms.present? %>
+		<% @reportrooms.each do |reportroom| %>
+			<li class="list-group-item">
+				<%= button_to "%{nm} (%{time})" % [nm: reportroom['bb_nm'], time: reportroom['created']], { action: 'show', id: reportroom['id'] }, method: :get, type: :button, class: "btn btn-secondary" %>
+			</li>
+		<% end %>
+  	<% end %>
+</ul>
+<br>
+
+<%= link_to '글쓰기', new_reportroom_path %>

@@ -1,0 +1,240 @@
+
+<div class="section mt-1 mb-1">
+	<div class="card">
+		
+		<div class="title">
+		   <div class="card-title">월별 매출 비교 (단위 만원)</div>
+		   <div class="card-title_2">
+				<span id="sum" class="badge badge-secondary" onclick="moverange('1')" >합</span>
+				<span id="avr" class="badge badge-secondary" onclick="moverange('2')" >평균</span>
+		   </div>
+		</div>
+		<div class="toparea">
+				<div style="float: left; width: 26%;">
+				
+				</div>
+				<div style="float: left; width: 27%;">
+					기준월
+				</div>
+				<div style="float: left; width: 30%;">
+					비교월
+				</div>
+				<div style="float: left; width: 15%;">
+				
+				</div>
+			
+				<div style="float: left; width: 26%;">
+				
+				</div>
+				<div style="float: left; width: 27%;">
+					<select name="year_1" id="year_1_select" >
+					</select>
+				</div>
+				<div style="float: left; width: 30%;">
+					<select name="year_2" id="year_2_select">
+					</select>
+				</div>
+				<div style="float: left; width: 15%;">
+				
+				</div>
+				<div style="float: left; width: 26%;">
+				</div>
+				<div style="float: left; width: 27%;">
+					<select name="month_1" id="month_1_select">
+						<% for idx in 1..12 %>
+						<option value="<%= "%02d" % [idx] %>"><%="#{idx}월"%></option>
+						<% end %>
+					</select> 
+				</div>
+				<div style="float: left; width: 30%;">
+					<select name="month_2" id="month_2_select" onchange="onSelect()">
+						<% for idx in 1..12 %>
+						<option value="<%= idx.to_s.rjust(2, "0") %>"><%="#{idx}월"%></option>
+						<% end %>
+					</select>
+				</div>
+				<div style="float: left; width: 15%;">
+				
+				</div>
+		</div>
+		
+		
+		<div class="card-body">
+			<ul class="listview image-listview">
+				<% if sfg.present? %>
+				<li>
+					<a href="#" class="item" onclick="opentab(event, 'SFG')" >
+						<div class="in1">
+							<div class="in1body">
+								<div class="t">
+									<div class="chip chip-warning">SFG</div>
+								</div>
+							</div>
+						</div>
+						<% sfg.each do |key, info| %>
+						<div class="in">
+							<div class="in2body">
+								<% if info[:first].present? %>
+								<div class="t"><%= number_with_delimiter( (info[:first] * 0.0001).to_i, delimiter: ",") %></div>
+								<% end %>
+							</div>
+						</div>	
+						<div class="in">
+							<div class="in2body">
+								<% if info[:second].present? %>
+								<div class="t"><%= number_with_delimiter( (info[:second] * 0.0001).to_i, delimiter: ",") %></div>
+								<% end %>
+							</div>
+						</div>	
+						<div class="in">
+							<div class="in2body">
+								<div class="t">
+									<% if info[:per].present? %>
+									<font
+									<% if info[:per] >= 0.0 %>
+										color="blue">▲
+									<%else %>
+										color="red">▽
+									<% end %>
+									<%= info[:per].abs %></font>
+									<% end %>
+								</div>
+							</div>
+						</div>
+						<% end %>
+					</a>
+				</li>
+				<% end %>
+				<% if business.present? %>
+				<% business.each do |key, value| %>
+					<li>
+						<a href="#" class="item" onclick="opentab(event, '<%= key %>')" >
+							<div class="in1">
+								<div class="in1body">
+									<div class="t">
+										<div class="chip chip-warning"><%= key %></div>
+									</div>
+								</div>
+							</div>
+							<div class="in">
+								<div class="in2body">
+									<% if value[:first].present? %>
+									<div class="t"><%= number_with_delimiter( (value[:first] * 0.0001).to_i, delimiter: ",") %></div>
+									<% end %>
+								</div>
+							</div>
+							<div class="in">
+								<div class="in2body">
+									<% if value[:second].present? %>
+									<div class="t"><%= number_with_delimiter( (value[:second] * 0.0001).to_i, delimiter: ",") %></div>
+									<% end %>	
+								</div>
+							</div>
+							<div class="in">
+								<div class="in2body">
+									<div class="t">
+										<% if value[:per].present? %>
+										<font 
+										<% if value[:per] >= 0.0 %>
+											color="blue">▲
+										<%else %>
+											color="red">▽
+										<% end %>
+										<%= value[:per].abs %>
+										</font>
+										<% end %>
+									</div>
+								</div>
+							</div>
+						</a>
+					</li>
+				<% end %>
+				<% end %>
+			</ul>
+		</div>
+	</div>
+</div>	
+	
+	
+<!--
+<div class="section mt-1 mb-1">
+	<div class="card">
+		<div class="card-body">
+
+			<canvas id="myChart"></canvas>
+
+				<script> 
+					var ctx = document.getElementById('myChart'); 
+					var myChart = new Chart(ctx, { 
+						type: 'bar', 
+						data: { 
+							labels: ['월', '화', '수', '목', '금', '토', '일'],
+							datasets: [{ 
+								label: '# of Votes', 
+								data: [12, 19, 3, 5, 2, 3, 20], 
+								backgroundColor: [ 
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)', 
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+								], 
+								borderColor: [ 
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+									'rgba(54, 162, 235, 0.2)',
+								], 
+								borderWidth: 1 
+							}] 
+						}, 
+						options: {
+							scales: { 
+								yAxes: [{ 
+									ticks: { 
+										beginAtZero: true
+									} 
+								}] 
+							} 
+							,
+							legend: { 
+								display: false 
+							} 
+						} 
+					}); 
+
+				</script>
+
+
+		</div>
+	</div>
+</div>
+-->
+
+
+<div class="section mt-1 mb-1">
+	<div class="card">
+		<div class="card-body">
+			<ul class="listview_new simple-listview">
+				<% if shops.present? %>
+				<% shops.each do |key, value| %>
+					<div id="<%= "#{key}" %>"  class="tabcontent" style="display: none;" >
+						<%= render 'sales_analysis/rangemonth/shoppart.html.erb', value: value %>
+					</div>
+				<% end %>	
+				
+				<div id="SFG"  class="tabcontent" style="display: none;" >
+				<% shops.lazy.select{|key, value| key != '자작'}.each do |key, value| %>
+					<%= render 'sales_analysis/rangemonth/shoppart.html.erb', value: value %>
+				<% end %>
+				</div>
+				<% end %>
+			</ul>
+		</div>
+	</div>
+</div>

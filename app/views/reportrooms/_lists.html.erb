@@ -1,0 +1,41 @@
+<% if report.present? %>
+<div class="section mt-1 mb-1">
+	<div class="card">
+		<ul class="listview image-listview">
+			<li>
+				<a href="#" class="item" onclick="SelectReport('<%= type %>');">
+					<div class="in1">
+						<div class="in1body">
+							<div class="t">
+							<div class="chip chip-warning">
+								<%= report[0]['bb_nm'] %>
+							</div>
+						</div>
+							<div class="t"></div>
+							<div class="t"></div>
+						</div>
+					</div>
+					<div class="in">
+						<div>
+							<% if report.length == 3 %>
+								<div class="t">[<%= toTimeFormat(report[0]['timetype'], report[0]['created_at']) %>]<%= report[0]['ccu_nm'] %></div>
+								<div class="t">[<%= toTimeFormat(report[1]['timetype'], report[1]['created_at']) %>]<%= report[1]['ccu_nm'] %></div>
+								<div class="t">[<%= toTimeFormat(report[2]['timetype'], report[2]['created_at']) %>]<%= report[2]['ccu_nm'] %></div>
+							<% elsif report.length == 2 %>
+								<div class="t">[<%= toTimeFormat(report[0]['timetype'], report[0]['created_at']) %>]<%= report[0]['ccu_nm'] %></div>
+								<div class="t">[<%= toTimeFormat(report[1]['timetype'], report[1]['created_at']) %>]<%= report[1]['ccu_nm'] %></div>
+								<div class="t"></div>
+							<% else %>
+								<div class="t">[<%= toTimeFormat(report[0]['timetype'], report[0]['created_at']) %>]<%= report[0]['ccu_nm'] %></div>
+								<div class="t"></div>
+								<div class="t"></div>
+							<% end %>
+						</div>
+						<span class="text-muted"></span>
+					</div>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>
+<% end %>

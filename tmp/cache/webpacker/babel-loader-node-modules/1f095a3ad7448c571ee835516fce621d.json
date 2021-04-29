@@ -1,0 +1,1 @@
+{"ast":null,"code":"document.getElementById(\"alert-danger\");","map":{"version":3,"sources":["/workspace/CUBE_DB_CONNECT_1/app/javascript/packs/session.js"],"names":["document","getElementById"],"mappings":"AAAAA,QAAQ,CAACC,cAAT,CAAwB,cAAxB","sourcesContent":["document.getElementById(\"alert-danger\");"]},"metadata":{},"sourceType":"module"}

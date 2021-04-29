@@ -1,0 +1,29 @@
+
+<!-- 최신 보고 내용 -->
+<div class="section mt-1 mb-1">
+	<div class="card">
+		<div class="card-body">
+			<h3 class="card-title">최신보고내용</h3>
+			<ul class="listview image-listview">
+			<% if @reportrooms.present? %>
+			<% @reportrooms.each do |reportroom| %>
+				<li>
+					<a href="#" class="item" onclick="location.href='<%= type_reportrooms_path(reportroom['roomtype']) %>'">
+					   <!-- <div class="icon-box bg-primary">-->
+						<div>
+							▶&nbsp; <!--<ion-icon name="document-outline" role="img" class="md hydrated" aria-label="document outline"></ion-icon> -->
+						</div>
+						<div class="in">
+							<div> 
+								<%= "%{bb_nm} ▶ [%{time}] %{ccu_nm} " % [bb_nm: reportroom['bb_nm'], ccu_nm: reportroom['ccu_nm'], time: toTimeFormat(reportroom['timetype'], reportroom['created_at']) ] %>
+							</div>
+							<span class="text-muted"></span>
+						</div>
+					</a>
+				</li>
+			<% end %>
+			<% end %>
+			</ul>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,40 @@
+<% if datas.present? %>
+<% datas.each do |key, value| %>
+<li>
+	<a href="#" class="item"  onclick="opentab(event, '<%= key %>')" >
+		<div class="in1">
+			<div class="in1body">
+				<div class="t">
+					<div class="chip chip-warning"><%= key %></div>
+				</div>
+			</div>
+		</div>
+		<% if value.present? %>
+			<div class="in">
+				<div class="in2body">
+					<div class="t">
+						<%= render 'compare_shop_part', data: value[datakey1] %>
+					</div>
+				</div>
+			</div>
+
+			<div class="in">
+				<div class="in2body">
+					<div class="t">
+						<%= render 'compare_shop_part', data: value[datakey2] %>
+					</div>
+				</div>
+			</div>
+
+			<div class="in">
+				<div class="in2body">
+					<div class="t">			
+						<%= render 'compare_shop_part', data: value[datakey3] %>
+					</div>
+				</div>
+			</div>			
+		<% end %>
+	</a>
+</li>									
+<% end %>
+<% end %>

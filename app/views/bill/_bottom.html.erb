@@ -1,0 +1,27 @@
+<div class="appBottomMenu">
+	<a href=<%= priceavg_path(month:day, type: 1) %> class="item">
+		<div class="col">
+			<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+			<strong>빌단가</strong>
+		</div>
+	</a>		
+
+	<a href=<%= pricecompare_path(month: day, type: 1) %> class="item">
+		<div class="col">
+			<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+			<strong>빌단가 비교</strong>
+		</div>
+	</a>
+	 <a href=<%= pieceavg_path(month: day, type: 1) %> class="item">
+		<div class="col">
+			<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+			<strong>빌수</strong>
+		</div>
+	</a>
+	 <a href=<%= piececompare_path(month: day, type: 1) %> class="item">
+		<div class="col">
+			<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+			<strong>빌수 비교</strong>
+		</div>
+	</a>
+</div>

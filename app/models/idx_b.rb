@@ -1,0 +1,3 @@
+class IdxB < ApplicationRecord
+	
+end

@@ -1,0 +1,416 @@
+<%= content_for :metatage_includes do %>
+  	<meta name="turbolinks-visit-control" content="reload">
+<% end %>
+<%= content_for :stylesheet_includes do %>
+<style>
+	.input-group .input-group-text {
+			padding-left : 5px;
+    background: transparent;
+    border: 0;
+    /* border-bottom: 1px solid #E1E1E1; */
+    border-radius: 0;
+    font-size: 20px;
+    font-weight: 400;
+    color: #141515;
+    /* height: 40px; */
+    width: auto;
+    /* padding: 0 10px 0 0; */
+	}
+	.listview {
+		display: block;
+		padding: 0;
+		margin: 0;
+		color: #141515;
+		background: #fff;
+		border-top: 0px solid #E1E1E1;
+		border-bottom: 0px solid #E1E1E1;
+		line-height: 1.3em;
+	}
+
+	.listview > li:after {
+		content: "";
+		display: block;
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 0px;
+		background: #E1E1E1;
+	}
+
+	.listview_new {
+		list-style:none;
+		display: block;
+		padding: 0;
+		margin: 0;
+		color: #141515;
+		background: #fff;
+		line-height: 1.3em;
+
+		font-size:13px;
+	}
+
+	.simple-listview .tabcontent > li .item {
+		padding: 2px 18px;
+		width: 100%;
+		min-height: 30x;
+		display: flex;
+		align-items: center;
+	}
+
+	.simple-listview .tabcontent > li .item .s_item_in1{
+		width: 30%;
+	}
+
+	.simple-listview .tabcontent > li .item .s_item_in2{
+		text-align: right;
+		padding-right:5px;
+		width: 26%;
+	}	
+
+	.card .card-body {
+		padding: 7px;
+		line-height: 1.4em;
+	}
+
+	.card .title {
+			padding-top : 7px;
+		margin-bottom : -5px;
+	}
+
+
+		.card .card-title {
+		padding-left:10px;
+		color: #141515;
+		font-size: 18px;
+		margin-top: .6rem;
+		float:left;
+		width: 50%;
+	}
+
+	.card .card-title_2 {
+		padding-left:1rem;
+		margin-top: .6rem;
+		float:left;
+		width: 50%;
+	}
+
+
+	.card .date {
+		margin-top: .6rem;
+		padding-left:1.0rem;
+		float:left;
+	}
+
+
+
+	.image-listview > li .item {
+		padding: 0px 0px;
+		width: 100%;
+		min-height: 30px;
+		display: flex;
+		align-items: center;
+	}
+
+	.image-listview > li .item .in {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 27%;
+	}
+
+	.card .listview .in1{
+
+		padding-left : 15px;
+		padding-right : 5px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 35%;
+	}
+
+	.card .listview .in1 .in1body{
+		width: 100%;
+	}
+
+	.card .listview .in .in2body{
+		width: 100%;
+		margin-right: 0.6rem;
+	}
+
+	.card .listview .in1 .in1body .chip{
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		text-align: center;
+		font-size: 15px;
+		margin-top : 5px;
+		margin-bottom : 5px;
+		width: 100%;
+	}
+
+	.card .card-tiem {
+		height: 30px;
+		line-height: 30px;
+		display: block;
+	}
+
+	.card .card-tiem .chip{
+		height: 30px;
+		line-height: 30px;
+		display: block;
+		text-align: center;
+		font-size: 15px;
+		margin-top : 5px;
+		margin-bottom : 5px;
+		width: 100%;
+	}
+
+	.card .listview .t{
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		text-align: right;
+		font-size: 15px;
+
+	}
+
+	.btn_body {
+		padding: 7px;
+	}
+
+	.btn_body .btn {
+
+		font-size: 13px;
+
+	}
+
+</style>
+<% end %>
+<%= content_for :javascript_includes do %>
+<script src="/assets/js/lib/date.js"></script>
+<script>
+			window.addEventListener('DOMContentLoaded', function(){
+		setDateBox1();		
+		const query = new URLSearchParams(window.location.search);
+		const type = query.get('type');
+		if(type == 1){
+		document.getElementById('day').className="chip chip-warning";		
+		}else if(type ==2){
+		document.getElementById('lunch').className="chip chip-warning";
+		}else{
+		document.getElementById('meal').className="chip chip-warning";	
+		}
+	});
+
+	function opentab(evt, itemname) {
+
+	  var i, tabcontent, tablinks;
+
+	  tabcontent = document.getElementsByClassName("tabcontent");
+
+		if(itemname == 'SFG') {
+		  for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "block";
+		  }
+		}else {
+
+		  for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		  }
+
+		  tablinks = document.getElementsByClassName("item");
+
+		  for (i = 0; i < tablinks.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" active", "");
+		  }
+
+		  document.getElementById(itemname).style.display = "block";
+		  evt.currentTarget.className += " active";
+
+		}
+	}
+
+
+	//년월일 선택
+	function onSelect() {
+		var value1 = document.getElementById("year_1_select").value;
+		var value2 = document.getElementById("month_1_select").value;
+
+		//bill/priceavg?month=2020-02&type=1
+
+		window.location.href ="/bill/pricecompare?month="+value1+"-"+value2+"&type=1";
+
+	}
+
+	//주중주말 점심저녁 육류식사 
+	function moverange(type)
+	{
+		var value1 = document.getElementById("year_1_select").value;
+		var value2 = document.getElementById("month_1_select").value;
+
+		window.location.href ="/bill/pricecompare?month="+value1+"-"+value2+"&type="+type;
+	}
+
+
+	document.addEventListener("DOMContentLoaded", function(){
+		$('#year_1_select').val('<%= @yearvalue %>');
+		$('#month_1_select').val('<%= @monthvalue %>');
+	});
+		
+</script>
+<% end %>
+
+
+<!-- App Header -->
+<!-- <div class="appHeader bg-primary scrolled">-->
+<div class="appHeader bg-primary text-light">
+<div class="left">
+		<a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+			<ion-icon name="menu-outline"></ion-icon>
+		</a>
+</div>
+	<div class="pageTitle">빌수/빌단가 분석</div>
+</div>
+<!-- * App Header -->
+
+
+<!-- App Capsule -->
+<div id="appCapsule">
+	<div class="section mt-1 mb-1">
+		<div class="card">
+
+		</div>
+	</div>
+
+	<div class="section mt-1 mb-1">
+		<div class="card">
+			<div class="title">
+			   <div class="card-title">빌단가 비교(전월비)</div>
+			   <div class="card-title_2">
+				<select name="year_1" id="year_1_select">
+				</select>
+
+				<select name="mont_1" id="month_1_select"  onchange="onSelect()">
+					<option value="01">1월</option>
+					<option value="02">2월</option>
+					<option value="03">3월</option>
+					<option value="04">4월</option>
+					<option value="05">5월</option>
+					<option value="06">6월</option>
+					<option value="07">7월</option>
+					<option value="08">8월</option>
+					<option value="09">9월</option>
+					<option value="10">10월</option>
+					<option value="11">11월</option>
+					<option value="12">12월</option>
+				</select> 
+			   </div>
+			</div>
+
+			<div class="card-body">         
+				<div class="card-tiem">
+					<div style="float: left; width: 33%; padding-left:15px; padding-right:15px;  height:18px">
+						<div id="day" class="chip badge-secondary" onclick="moverange('1')" style="color:#fff !important; ">주중/주말</div>
+					</div>
+					<div style="float: left; width: 33%; padding-left:15px; padding-right:15px;  height:18px">
+						<div id="lunch" class="chip badge-secondary" onclick="moverange('2')" style="color:#fff !important; ">점심/저녁</div>
+					</div>
+					<div style="float: left; width: 33%; padding-left:15px; padding-right:15px;  height:18px">
+						<div id="meal" class="chip badge-secondary" onclick="moverange('3')"  style="color:#fff !important; ">육류/식사</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="card-body" style="border: 0px  solid gray;">
+
+				<ul class="listview image-listview">
+					<li>
+
+						<div class="item">
+							<div style="width: 22%; text-align:right" >
+								(단위 %)
+							</div>
+
+							<div class="in" style="width: 22%;">
+								<div class="in2body">
+									<div class="t">평균</div>
+								</div>
+
+							</div>
+							<div class="in" style="width: 22%;">
+								<div class="in2body">
+									<div class="t">
+										<% if @type == '1' %>
+										주중
+										<% end %>
+										<% if @type == '2' %>
+										점심
+										<% end %>
+										<% if @type == '3' %>
+										육류
+										<% end %>
+									</div>
+								</div>
+							</div>
+							<div class="in" style="width: 22%;">
+								<div class="in2body">
+									<div class="t">
+										<% if @type == '1' %>
+										주말
+										<% end %>
+										<% if @type == '2' %>
+										저녁
+										<% end %>
+										<% if @type == '3' %>
+										식사
+										<% end %>
+									</div>
+								</div>
+							</div>
+						</div>
+					</li>
+
+					<% if @type == '1' %>
+						<%= render 'compare_part', { datas: @week, datakey1: :caet, datakey2: :cawt, datakey3: :caht } %>
+					<% end %>
+
+					<% if @type == '2' %>
+						<%= render 'compare_part', { datas: @lunch, datakey1: :caet, datakey2: :cael, datakey3: :caed } %>
+					<% end %>
+
+					<% if @type == '3' %>
+						<%= render 'compare_part', { datas: @meal, datakey1: :caet, datakey2: :cmet, datakey3: :cfet } %>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="section mt-1 mb-1">
+		<div class="card">
+			<div class="card-body">
+				<ul class="listview_new simple-listview">
+					<% if @type == '1' %>
+						<%= render 'compare_shop', { datas: @weekshops, datakey1: :caet, datakey2: :cawt, datakey3: :caht } %>
+					<% end %>
+
+					<% if @type == '2' %>
+						<%= render 'compare_shop', { datas: @lunchshops, datakey1: :caet, datakey2: :cael, datakey3: :caed } %>
+					<% end %>
+
+					<% if @type == '3' %>
+						<%= render 'compare_shop', { datas: @mealshops, datakey1: :caet, datakey2: :cmet, datakey3: :cfet } %>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+</div>
+	
+<%= render "bottom", day: @lastday.strftime('%Y-%m') %>
+<%= render 'layouts/sidebar', rooms: @roomtype %>
+<script src="/assets/js/lib/popper.min.js"></script>
+<script src="/assets/js/lib/bootstrap.min.js"></script>

@@ -1,0 +1,16 @@
+<% if datas.present? %>
+<% datas.each do |key, shops| %>
+<div id="<%= "#{key}" %>"  class="tabcontent" > 					
+	<% shops.each do |shop| %>
+		<li>
+			<div class="item">
+				<div class ="s_item_in1"><%= shop['shop_nm'].first(5) %></div>					
+				<div class ="s_item_in2"><%= (shop[datakey1] * 0.0001).floor(1)  %></div>
+				<div class ="s_item_in2"><%= (shop[datakey2] * 0.0001).floor(1)  %></div>
+				<div class ="s_item_in2"><%= (shop[datakey1] * 0.0001).floor(1)  %></div>
+			</div>	
+		</li>
+	<% end %>
+</div>
+<% end %>					
+<% end %>

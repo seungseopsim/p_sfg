@@ -1,0 +1,343 @@
+<%= content_for :stylesheet_includes do %>
+<style>
+    .table {
+        font-size: 14px;
+        border-top: 0;
+        border-bottom: 0;
+        color: #141515;
+        font-weight: 500;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.3rem;
+    }
+
+    textarea {
+        border: 0px;
+        min-height: 50%;
+    }
+
+    body,
+    html {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    #content {
+        display: block;
+    }
+
+    #loading {
+        display: none;
+    }
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: border-box;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .btn {
+        width: 120px;
+        height: 30px;
+        display: inline-block;
+        padding: 0.45em 0.5em;
+        border-radius: 3px;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        transition: all 250ms ease;
+    }
+
+    .btn:hover {
+        color: #1E74FD ;
+    }
+
+    .btn:hover:after {
+        -webkit-animation-name: bgin;
+        animation-name: bgin;
+        transform: skew(-45deg) translate(-50%);
+    }
+
+    .btn:after {
+        content: '';
+        z-index: -1;
+        width: 150%;
+        height: 100%;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        -webkit-animation-name: bgout;
+        animation-name: bgout;
+        -webkit-animation-duration: 400ms;
+        animation-duration: 400ms;
+        transform: skew(-45deg) translate(-150%);
+    }
+
+    .btn--orange {
+        border: 2px solid #1E74FD;
+        color: #1E74FD;
+    }
+
+    .btn--orange:after {
+        background-color: #1E74FD;
+    }
+
+    .bigPictureWrapper {
+        position: absolute;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        top: 0%;
+        width: 100%;
+        height: 100vh;
+        background-color: gray;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.3);
+    }
+	.listFile{
+		border: 1px ; float: left; width: 50%; padding:5px; text-align:center;
+	}
+	.fancy{
+	position:relative;
+	display:inline-block;
+	font-size:0;
+	line-height:0;
+	}
+
+	.fancy:after{
+	position:absolute;
+	top:1px;
+	left:1px;
+	bottom:1px;
+	right:1px;
+	border:1px solid rgba(255,255,255,0.5);
+	outline:1px solid rgba(0,0,0,0.2);
+	content:" ";
+	}
+</style>
+
+<% end %>
+
+<%= content_for :javascript_includes do %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+<script>
+    lightbox.option({
+        resizeDuration: 200,
+        wrapAround: true,
+        positionFromTop: 50,
+    });
+</script>
+<% end %>
+
+
+<%= render 'alertmsg' %>
+<div class="bigPictureWrapper">
+    <div class="bigPicture"></div>
+</div>
+<div id="inW">
+    <% if @reportroom.present? %>
+    <div>
+        <%= @reportroom['s_nm'] %>
+        <div><br>보고내용
+            <pre><%=raw @reportroom['contents'] %></pre>
+        </div>
+        <div id="getshow">향후계획
+            <pre><%=raw @reportroom['plancontents'] %></pre>
+        </div>
+    </div>
+    <br>
+
+    <div>
+        <% if @shopinfo.present? %>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="align-middle text-center">구분<br>(만원,%)</th>
+                    <th colspan="3" class="align-middle text-center">매출</th>
+                    <th rowspan="2" class="align-middle text-center">원가율<br>(인건|식자)</th>
+                </tr>
+
+                <tr>
+                    <th class="align-middle text-center">당월</th>
+                    <th class="align-middle text-center">전년비</th>
+                    <th class="align-middle text-center">전월비</th>
+                </tr>
+            </thead>
+
+            <% if @day.present? %>
+            <p><b><%= @day['shwng_begin'] %> 주간실적 기준</b></p>
+            <% end %>
+            <% @shopinfo.each do |key| %>
+            <tbody>
+                <td class="align-middle text-center">
+
+                    <%= link_to key['nm'].first(5), "https://sfgpl.synology.me/sfgplatform/assess_shop.php?ccu_id=#{current_user["idx_ccu_id"]}&sfg_id=g1&shop_id=#{key['id']}" %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= key['sales'] %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= key['salesprevy'] %><br>
+                    <% if key['salesrateprevy'].present? %>
+                    <font <% if key['salesrateprevy'] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= key['salesrateprevy'] %>
+                    </font>
+                    <% end %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= key['salesprevm'] %><br>
+                    <% if key['salesrateprevm'].present? %>
+                    <font <% if key['salesrateprevm'] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= key['salesrateprevm'] %>
+                    </font>
+                    <% end %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= key['pltotal'] %><br>(
+                    <% if key['prate'].present? %>
+                    <font <% if key['prate'] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= key['prate'] %>
+                    </font>
+                    <%end%> |
+                    <% if key['lrate'] >= 0.0 %>
+                    <font <% if key['lrate'] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= key['lrate'] %>
+                    </font>
+                    <% end %>)
+                </td>
+            </tbody>
+            <% end %>
+
+            <% if @shopinfototal.present? %>
+            <tbody>
+                <td class="align-middle text-center">합계</td>
+                <td class="align-middle text-center">
+                    <%= @shopinfototal[:sales] %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= @shopinfototal[:salesprevy] %><br>
+                    <% if @shopinfototal[:salesprevyavg].present? %>
+                    <font <% if @shopinfototal[:salesprevyavg] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= @shopinfototal[:salesprevyavg] %>
+                    </font>
+                    <% end %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= @shopinfototal[:salesprevm] %><br>
+                    <% if @shopinfototal[:salesprevmavg].present? %>
+                    <font <% if @shopinfototal[:salesprevmavg] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= @shopinfototal[:salesprevmavg] %>
+                    </font>
+                    <% end %>
+                </td>
+                <td class="align-middle text-center">
+                    <%= @shopinfototal[:plratetotal] %><br>(
+                    <% if @shopinfototal[:prateavg].present? %>
+                    <font <% if @shopinfototal[:prateavg] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <% end %>
+                        <%= @shopinfototal[:prateavg] %>
+                    </font>
+                    <% end %>|
+                    <% if @shopinfototal[:lrateavg].present? %>
+                    <font <% if @shopinfototal[:lrateavg] >= 0.0 %> style="color:blue">
+                        <% else %>
+                        style="color:red">
+                        <%end %>
+                        <%= @shopinfototal[:lrateavg] %>
+                    </font>
+                    <% end %>)
+                </td>
+            </tbody>
+            <% end %>
+        </table>
+
+        <% end %>
+    </div>
+
+    <div>
+        <% if @attachfiles.present? %>
+        <ul class="list-group-item" style="height:100vh">
+            <% @attachfiles.each do |key, value| %>
+            <% if key == :image %>
+            <% value.each_slice(3) do |temp| %>
+            <% temp.each do |file| %>
+            <li class="list-group-item listFile">
+                <a href="<%=file.url %>" class="popimg" data-lightbox="data-set"><span class="fancy"><img src='<%=file.url %>'
+                        style="width:120px;height:120px;border-radius:4px;"></span></a>
+                <a href="<%=file.url %>" id="imgDown" download="<%=file.identifier %>"
+                    class="btn btn--diagonal btn--orange">Download</a>
+            </li>
+            <% end %>
+            <% end %>
+            <% end %>
+            <% if key == :video %>
+            <li class="list-group-item listFile">
+                <% value.each do |file| %>
+                <a style="text-decoration:none;" download="<%=file.identifier %>" href="<%=file.url %>">
+                    <i class="fas fa-video fa-5x"></i><%= file.identifier %>
+                </a>
+                <% end %>
+            </li>
+            <% end %>
+            <% if key == :file %>
+            <li class="list-group-item listFile">
+                <% value.each do |file| %>
+                <a style="text-decoration:none;" download="<%=file.identifier %>" href="<%=file.url %>">
+                    <i class="fas fa-file fa-5x" ></i>
+                </a>
+				<br>
+				 <span><%=file.identifier %></span>
+                <% end %>
+            </li>
+            <% end %>
+            <% end %>
+        </ul>
+        <% end %>
+    </div>
+    <% end %>
+</div>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        const url = $(location).attr('pathname');
+        const boardNum = url.substring(13, 16);
+        $(".popimg").on("click", function () {
+            var offset = $(".bg" + boardNum, window.parent.document).offset();
+            $('body', window.parent.document).animate({
+                scrollTop: offset.top
+            }, 400);
+            console.log(offset);
+        });
+    });
+</script>

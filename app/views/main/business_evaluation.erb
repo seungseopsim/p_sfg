@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>신의눈</title>
+    <meta name="description" content="Mobilekit HTML Mobile UI Kit">
+    <meta name="keywords" content="bootstrap 4, mobile template, cordova, phonegap, mobile, html" />
+    <link rel="icon" type="image/png" href="/assets/img/favicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon/192x192.png">
+    <link rel="stylesheet" href="/assets/css/style.css">
+
+
+	
+	<style>
+		
+		.listview {
+			display: block;
+			padding: 0;
+			margin: 0;
+			color: #141515;
+			background: #fff;
+			border-top: 0px solid #E1E1E1;
+			border-bottom: 0px solid #E1E1E1;
+			line-height: 1.3em;
+		}
+		
+		.listview > li:after {
+			content: "";
+			display: block;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			height: 0px;
+			background: #E1E1E1;
+		}
+		
+		.listview_new {
+			
+			display: block;
+			padding: 0;
+			margin: 0;
+			color: #141515;
+			background: #fff;
+			line-height: 1.3em;
+		}
+		
+		.simple-listview > li .item {
+			padding: 2px 18px;
+			width: 100%;
+			min-height: 30x;
+			display: flex;
+			align-items: center;
+		}
+
+		.simple-listview > li .item .s_item_in1{
+			width: 30%;
+		}
+		
+		.simple-listview > li .item .s_item_in2{
+			text-align: right;
+			padding-right:28px;
+			width: 100%;
+		}	
+		
+		.card .card-body {
+			padding: 7px;
+			line-height: 1.4em;
+		}
+		
+
+
+		.card .card-title {
+			color: #141515;
+			font-size: 18px;
+		    margin-top: .6rem;
+			float:left;
+		}
+		
+		
+		.card .date {
+			color: #141515;
+			font-size: 15px;
+		    margin-top: .6rem;
+			float:left;
+			text-align:right;
+			width:60%;
+		}
+		
+		
+		.image-listview > li .item {
+			padding: 0px 0px;
+			width: 100%;
+			min-height: 30px;
+			display: flex;
+			align-items: center;
+		}
+		
+		.card .listview .in1{
+			
+			padding-left : 15px;
+			padding-right : 5px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 35%;
+		}
+		.card .listview .in1 .in1body{
+			width: 100%;
+		}
+		
+		.card .listview .in .in2body{
+			width: 100%;
+			margin-right: 0.6rem;
+		}
+		
+		.card .listview .in1 .in1body .chip{
+			height: 18px;
+			line-height: 18px;
+			display: block;
+			text-align: center;
+			font-size: 15px;
+			margin-top : 5px;
+			margin-bottom : 5px;
+			width: 100%;
+		}
+		
+		.card .listview .t{
+			height: 18px;
+			line-height: 18px;
+			display: block;
+			text-align: right;
+			font-size: 15px;
+
+		}
+		
+		.btn_body {
+			padding: 7px;
+		}
+		
+		.btn_body .btn {
+			
+			font-size: 13px;
+			
+		}
+		
+		
+		
+		
+	</style>
+	
+</head>
+	
+<body>
+
+    <!-- loader 
+    <div id="loader">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+  	loader -->
+
+    <!-- App Header -->
+  <!-- <div class="appHeader bg-primary scrolled">-->
+	<div class="appHeader bg-primary text-light">
+<div class="left">
+		<a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+			<ion-icon name="menu-outline"></ion-icon>
+		</a>
+</div>
+		<div class="pageTitle">업장평가</div>
+	</div>
+    <!-- * App Header -->
+
+
+    <!-- App Capsule -->
+    <div id="appCapsule">
+		
+		<div class="section mt-1 mb-1">
+            <div class="card">
+				<div class="card-body">
+			
+					
+				
+					<iframe width ="100%" height="900" src="https://sfgpl.synology.me/sfgplatform/assess_shop.php?ccu_id=<%=current_user["idx_ccu_id"]%>&sfg_id=g1">
+						
+					</iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+	<%= render 'layouts/sidebar', rooms: @roomtype %>
+
+	<!--
+	<div class="appBottomMenu">
+		
+		<a href="/sales_analysis/sales_view_1" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>현재 매출</strong>
+			</div>
+		</a>
+		<a href="/sales_analysis/sales_view_2" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>일별 매출</strong>
+			</div>
+		</a>
+		 <a href="/sales_analysis/sales_view_3" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>기간 매출</strong>
+			</div>
+		</a>
+		 <a href="/sales_analysis/sales_view_4" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>월별 매출</strong>
+			</div>
+		</a>
+	
+    </div>-->
+
+	<script src="/assets/js/lib/popper.min.js"></script>
+	<script src="/assets/js/lib/bootstrap.min.js"></script>
+	<!-- template moudle -->
+    <script type="module" src="https://unpkg.com/ionicons@5.2.3/dist/ionicons/ionicons.js"></script>
+    <!-- Owl Carousel -->
+    <script src="/assets/js/plugins/owl-carousel/owl.carousel.min.js"></script>
+    <!-- jQuery Circle Progress -->
+    <script src="/assets/js/plugins/jquery-circle-progress/circle-progress.min.js"></script>
+    <!-- Base Js File -->
+    <script src="/assets/js/base.js"></script>
+
+</body>
+
+</html>

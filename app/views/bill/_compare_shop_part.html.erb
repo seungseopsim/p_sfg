@@ -1,0 +1,12 @@
+<% if data.kind_of?(String) %>
+	<%= data %>
+<%else %>
+	<font 
+	<% if data >= 0.0 %>	
+		style="color:blue">▲
+	<% else %>
+		style="color:red">▽
+	<%end %>
+	<%= data.abs %>
+	</font>
+<% end %>

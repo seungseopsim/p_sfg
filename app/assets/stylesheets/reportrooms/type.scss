@@ -1,0 +1,118 @@
+
+		.card .card-body {
+			padding: 7px;
+			line-height: 1.4em;
+		}
+
+		.card .card-title {
+			color: #141515;
+			font-size: 18px;
+			font-weight: 700;
+		    margin-top: .6rem;
+		}
+		
+		.card .c_title {
+			color: #141515;
+			font-size: 15px;
+			padding: 5px 10px;
+			font-weight: 700;
+			 margin-top: .6rem;
+		}
+		
+		.card .chart_title {
+			color: #141515;
+			font-size: 18px;
+			font-weight: 700;
+		    margin-top: .6rem;
+		}
+		.card .listview .in1{
+			padding-right : 5px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+		}
+		
+		.card .listview .in2{
+	
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 40%;
+		}
+		.card .listview .in2 .chip{
+			height: 30px;
+			line-height: 30px;
+			display: block;
+			text-align: left;
+			font-size: 16px;
+			margin-top : 5px;
+			margin-bottom : 5px;
+			padding-left: 15px;
+			width: 100%;
+		}
+		
+		.card .listview .in1 .chip{
+			height: 25px;
+			line-height: 25px;
+			display: block;
+			text-align: left;
+			font-size: 16px;
+			margin-top : 5px;
+			margin-bottom : 5px;
+			padding-left: 15px;
+			width: 100%;
+		}
+		
+		.card .listview .t{
+			height: 18px;
+			line-height: 18px;
+			display: block;
+			text-align: left;
+			font-size: 15px;
+			margin-top : 5px;
+			margin-bottom : 5px;
+		}
+		
+		.btn_body {
+			padding: 7px;
+		}
+		
+		.btn_body .btn {
+			
+			font-size: 13px;
+			
+		}
+		.iframe100 {   display: block;   border: none;   height: 100vh;   width: 100%; }
+		.accordion-body {
+			padding: 0.25rem 0.25rem;
+		}
+		.side_menu
+		{
+			margin-left:  30px;
+		}
+		
+		
+		.side_menu .chip {
+			height: 28px;
+			line-height: 28px;
+			display: block;
+			text-align: center;
+			font-size: 15px;
+			margin-top: 5px;
+			margin-bottom: 2px;
+			width: 95%;
+		}
+		
+		.section-title
+		{
+			font-size:20px;
+			
+		}
+		
+		.inset .accordion {
+			border-radius: 6px;
+			border: 1px solid #E1E1E1;
+			margin-top:5px;
+		}
+		

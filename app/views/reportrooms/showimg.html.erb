@@ -1,0 +1,154 @@
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=0,maximum-scale=10,user-scalable=yes">
+<%= content_for :metatage_includes do %>
+  	<meta name="turbolinks-visit-control" content="reload">
+
+<% end %>
+<%= content_for :javascript_includes do %>
+	<%= javascript_pack_tag 'reportrooms','data-turbolinks-track': 'reload' %>
+<script language='JavaScript' type='text/javascript'>
+window.addEventListener('DOMContentLoaded', function(){
+		const query = new URLSearchParams(window.location.search);
+		console.log(query);
+		const down = query.get('download');
+		const href = query.get('href');
+		document.getElementById("imgDown").download = down;
+		document.getElementById("imgDown").href = href;
+		document.getElementById("showImg").src = href;
+		console.log(down);
+		console.log(href);
+		});
+</script>
+<% end %>
+
+<%= content_for :stylesheet_includes do %>
+<style>
+	
+	body{
+		width:100%;
+		padding:10px 5px;
+		font-family: Hack, monospace;
+	}
+	img{
+	width: 100%;
+    height: 70vh;
+    background-image: url("image-url");
+    background-repeat: no-repeat 
+    background-size: cover; 
+    background-position: center; 
+	}
+*, *:before, *:after {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.btn {
+  width: 150px;
+  display: inline-block;
+  padding: 1em 1.6em;
+  border-radius: 3px;
+  margin-top: 2rem;
+  font-weight: bold;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 250ms ease;
+}
+.btn:hover {
+  color: white;
+}
+.btn:hover:after {
+  -webkit-animation-name: bgin;
+          animation-name: bgin;
+  transform: skew(-45deg) translate(-50%);
+}
+.btn:after {
+  content: "";
+  z-index: -1;
+  width: 150%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  -webkit-animation-name: bgout;
+          animation-name: bgout;
+  -webkit-animation-duration: 400ms;
+          animation-duration: 400ms;
+  transform: skew(-45deg) translate(-150%);
+}
+.btn--orange {
+  border: 2px solid #f28e0a;
+  color: #f28e0a;
+}
+.btn--orange:after {
+  background-color: #f28e0a;
+}
+.boss{
+display: flex;
+flex: auto;
+justify-content: center;
+}
+	
+</style>
+<% end %>
+
+<!-- App Header -->
+<!-- <div class="appHeader bg-primary scrolled">-->
+
+<div class="appHeader bg-primary">
+	<div class="left">
+		<a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+			<ion-icon name="menu-outline"></ion-icon>
+		</a>
+	</div>
+	<div class="pageTitle">첨부파일</div>
+</div>
+
+
+<div style="padding-top:50px;">	
+<img id="showImg" src='' >
+<div class="boss">
+<a href="" id="imgDown" download="" class="btn btn--diagonal btn--orange">Download</a>
+</div>
+</div>
+
+
+
+<div class="appBottomMenu">
+	<a onclick="history.back()" class="item">
+		<div class="col">
+			<ion-icon style="font-size:30px"
+				name="arrow-back-outline"
+				role="img"
+				class="md hydrated"
+				aria-label="home outline">
+			</ion-icon>
+			<span class="badge badge-danger">돌아가기</span>
+		</div>
+	</a>
+
+	<a href="<%= index_main_path %>" class="item">
+		<div class="col">
+			<ion-icon 
+				name="home-outline"
+				role="img"
+				class="md hydrated"
+				aria-label="home outline">
+			</ion-icon>
+		</div>
+	</a>
+		<a href="#" class="item">
+		<div class="col">
+		</div>
+	</a>
+</div>
+<%= render 'layouts/sidebar', rooms: @roomtype %>
+
+<script src="/assets/js/lib/popper.min.js"></script>
+<script src="/assets/js/lib/bootstrap.min.js"></script>
+<!-- ///////////// Js Files ////////////////////  -->
+
+

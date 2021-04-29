@@ -1,0 +1,28 @@
+	<div class="appBottomMenu">
+		
+		<a href="/analysis/current" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>현재 매출</strong>
+			</div>
+		</a>
+		<a href="/analysis/day?day=<%= Date.today - 1.day %>" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>일별 매출</strong>
+			</div>
+		</a>
+		 <a href="/analysis/range?start=<%= Date.today - 28.day %>&end=<%= Date.today - 1.day %>&type=1" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>기간 매출</strong>
+			</div>
+		</a>
+		 <a href="/analysis/rangemonth?start=<%=(Date.today - 1.month).strftime("%Y-%m") %>&end=<%=(Date.today - 2.month).strftime("%Y-%m") %>&type=1" class="item">
+			<div class="col">
+				<ion-icon name="document-text-outline" role="img" class="md hydrated" aria-label="document text outline"></ion-icon>
+				<strong>월별 매출</strong>
+			</div>
+		</a>
+	
+    </div>

@@ -1,0 +1,170 @@
+
+<div class="section mt-1 mb-1">
+	<div class="card">
+
+		<div class="card-body">
+			<div class="toparea">
+				<div style="float: left; width: 26%;">
+				
+				</div>
+				<div style="float: left; width: 27%;">
+				기간매출
+				</div>
+				<div style="float: left; width: 30%;">
+				전년동기
+				</div>
+				<div style="float: left; width: 15%;">
+				
+				</div>
+
+				<div style="float: left; width: 26%;">
+				
+				</div>
+				<div style="float: left; width: 27%;">
+				<%= startday_1 %> ~
+				</div>
+				<div style="float: left; width: 30%;">
+				<%= startday_2 %> ~
+				</div>
+				<div style="float: left; width: 15%;">
+				
+				</div>
+
+				<div style="float: left; width: 26%;">
+				
+				</div>
+				<div style="float: left; width: 27%;">
+				<%= endday_1 %> 
+				</div>
+				<div style="float: left; width: 30%;">
+				<%= endday_2 %>
+				</div>
+				<div style="float: left; width: 15%;">
+				
+				</div>
+			</div>
+			<ul class="listview image-listview">
+				<% if sfg.present? %>
+				<li>
+					<a href="#" class="item" onclick="opentab(event, 'SFG')" >
+
+						<div class="in1">
+							<div class="in1body">
+								<div class="t">
+									<div class="chip chip-warning">SFG</div>
+								</div>
+							</div>
+						</div>
+						
+						<% sfg.each do |key, info| %>	
+						<div class="in">
+							<div class="in2body">
+								<% if info[:first].present? %>
+								<div class="t"><%= number_with_delimiter( (info[:first] * 0.0001).to_i, delimiter: ",") %></div>
+								<% end %>
+							</div>
+						</div>	
+						<div class="in">
+							<div class="in2body">
+								<% if info[:second].present? %>
+								<div class="t"><%= number_with_delimiter( (info[:second] * 0.0001).to_i, delimiter: ",") %></div>
+								<% end %>
+							</div>
+						</div>		
+						<div class="in">
+							<div class="in2body">
+								<div class="t">
+									<% if info[:per].present? %>
+									<font 
+									<% if info[:per] >= 0.0 %>
+										color="blue">▲
+									<%else %>
+										color="red">▽
+									<% end %>
+									<%= info[:per].abs %>
+									</font>
+									<% end %>
+								</div>
+							</div>
+						</div>
+						<% end %>
+					</a>
+				</li>
+				<% end %>
+				
+				<% if business.present? %>
+				<% business.each do |key, info| %>
+				<li>
+					<a href="#" class="item" onclick="opentab(event, '<%= key %>')" >
+						<div class="in1">
+							<div class="in1body">
+								<div class="t">
+									<div class="chip chip-warning"><%= key %></div>
+								</div>
+							</div>
+						</div>
+						<div class="in">
+							<div class="in2body">
+								<div class="t">
+									<% if info[:first].present? %>
+									<%= number_with_delimiter( (info[:first] * 0.0001).to_i, delimiter: ",") %>
+									<% end %>
+								</div>
+							</div>
+						</div>
+						<div class="in">
+							<div class="in2body">
+								<div class="t">
+									<% if info[:second].present? %>
+									<%= number_with_delimiter( (info[:second] * 0.0001).to_i, delimiter: ",") %>
+									<% end %>
+								</div>
+							</div>
+						</div>
+						<div class="in">
+							<div class="in2body">
+								<div class="t">
+									<% if info[:per].present? %>
+									<font 
+									<% if info[:per] >= 0.0 %>
+										color="blue">▲<%= info[:per].abs %>
+									<%else %>
+										color="red">▽<%= info[:per].abs %>
+									<% end %>
+									</font>
+									<% end %>
+								</div>
+							</div>
+						</div>
+					</a>
+				</li>
+				<% end %>
+				<% end %>
+			</ul>
+
+		</div>
+	</div>
+</div>
+
+<div class="section mt-1 mb-1">
+	<div class="card">
+		<div class="card-body">
+			<ul class="listview_new simple-listview">
+				<% if shops.present? %>
+				<% shops.each do |key, value| %>
+				<div id="<%= "#{key}" %>"  class="tabcontent" style="display: none;" >
+					<%= render 'sales_analysis/range/shoppart.html.erb', value: value %>
+				</div>
+				<% end %>	
+				
+				<div id="SFG"  class="tabcontent" style="display: none;" >
+				<% shops.lazy.select{|key, value| key != '자작'}.each do |key, value| %>
+					<%= render 'sales_analysis/range/shoppart.html.erb', value: value %>
+				<% end %>	
+				</div>
+				<% end %>
+			</ul>
+
+		</div>
+	</div>
+</div>

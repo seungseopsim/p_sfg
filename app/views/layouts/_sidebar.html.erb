@@ -1,0 +1,300 @@
+<style>
+    @import url(https://fonts.googleapis.com/css?family=BenchNine:700);
+
+    a:link {
+        color: black;
+        text-decoration: none;
+    }
+
+    a:visited {
+        color: black;
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: blue;
+        text-decoration: none;
+    }
+
+    .btn-primary_2 {
+        background: #FE9500 !important;
+        border-color: #FE9500 !important;
+        color: #ffffff !important;
+    }
+
+    .listview_1 {
+        display: block;
+        padding: 0;
+        margin: 0;
+        color: #141515;
+        background: #fff;
+        border-top: 1px solid #E1E1E1;
+        border-bottom: 1px solid #E1E1E1;
+        line-height: 1.3em;
+    }
+
+    .listview>.b_line:after {
+        content: "";
+        display: block;
+        position: absolute;
+        left: 65px;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: #E1E1E1;
+    }
+
+    .image-listview>li .2 {
+        height: 50px;
+    }
+
+    .side_menu {
+        display: flex;
+        ;
+    }
+
+    .chip2 {
+        width: 80px;
+    }
+
+    .side_menu .chip2 {
+        height: 28px;
+        line-height: 28px;
+        justify-content: center;
+        font-size: 15px;
+        margin-top: 5px;
+        margin-bottom: 2px;
+
+    }
+
+    .se {
+        justify-content: center;
+    }
+
+    #sidebarPanel .modal-body {
+        margin-bottom: 15px;
+    }
+
+    .snip1535 {
+        background-color: #fe9500;
+        border: none;
+        color: #ffffff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: 'BenchNine', Arial, sans-serif;
+        font-size: 1em;
+        font-size: 22px;
+        line-height: 1em;
+        margin: -5px 0px 5px 45px;
+        outline: none;
+        padding: 6px 20px 5px;
+        position: relative;
+        text-transform: uppercase;
+        font-weight: 700;
+        border-radius: 17px;
+    }
+
+    .snip1535:before,
+    .snip1535:after {
+        border-color: transparent;
+        -webkit-transition: all 0.25s;
+        transition: all 0.25s;
+        border-style: solid;
+        border-width: 0;
+        content: "";
+        height: 24px;
+        position: absolute;
+        width: 24px;
+    }
+
+    .snip1535:before {
+        border-color: #fe9500;
+        border-right-width: 2px;
+        border-top-width: 2px;
+        right: -5px;
+        top: -5px;
+
+    }
+
+    .snip1535:after {
+        border-bottom-width: 2px;
+        border-color: #fe9500;
+        border-left-width: 2px;
+        bottom: -5px;
+        left: -5px;
+    }
+
+    .snip1535:hover,
+    .snip1535.hover {
+        background-color: #fe9500;
+    }
+
+    .snip1535:hover:before {}
+
+    .snip1535:hover:before,
+    .snip1535.hover:before,
+    .snip1535:hover:after,
+    .snip1535.hover:after {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+<script>
+    $(".hover").mouseleave(
+        function () {
+            $(this).removeClass("hover");
+        }
+    );
+</script>
+<!-- App Sidebar -->
+<div class="modal fade panelbox panelbox-left" id="sidebarPanel" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <!-- profile box -->
+                <div class="profileBox">
+                    <div class="image-wrapper">
+                        <!--<img src="/assets/img/sample/avatar/avatar1.jpg" alt="image" class="imaged rounded">-->
+                    </div>
+                    <div class="in">
+                        <strong><%=current_user["ccu_nm"]%></strong>
+                    </div>
+                    <a href="javascript:;" class="close-sidebar-button" data-dismiss="modal">
+                        <ion-icon name="close"></ion-icon>
+                    </a>
+                </div>
+                <!-- * profile box -->
+                <div class="listview-title" style="font-size: 20px; margin-top: -10px;">
+                    <button class="snip1535" type="button" onclick="location.href='<%= index_main_path %>' ">메인
+                        바로가기</button>
+                </div>
+
+                <% if level >= 20 %>
+                <ul class="listview image-listview listview_1">
+                    <li class="b_line">
+                        <a href="/analysis/current" class="item 2">
+                            <div class="icon-box bg-success">
+                                <ion-icon name="layers-outline" role="img" class="md hydrated"
+                                    aria-label="layers outline"></ion-icon>
+                            </div>
+                            <div class="in">
+                                <div>현재 매출</div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="listview-title" style="font-size: 20px; margin-top: 15px;">
+                    경영지표
+                </div>
+                <ul class="listview image-listview listview_1">
+                    <li class="b_line">
+                        <a onclick="location.href='/main/sales_report'" class="item 2">
+                            <div class="icon-box bg-success">
+                                <ion-icon name="layers-outline" role="img" class="md hydrated"
+                                    aria-label="layers outline"></ion-icon>
+                            </div>
+                            <div class="in">
+                                <div>매출보고서</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li class="b_line">
+                        <a onclick="location.href='/main/yield_management'" class="item 2">
+                            <div class="icon-box bg-success">
+                                <ion-icon name="pencil-outline" role="img" class="md hydrated"
+                                    aria-label="pencil outline"></ion-icon>
+                            </div>
+                            <div class="in">
+                                <div>수율관리</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li class="b_line">
+                        <a href="/bill/priceavg?month=2020-12&type=1" class="item 2">
+                            <div class="icon-box bg-success">
+                                <ion-icon name="pencil-outline" role="img" class="md hydrated"
+                                    aria-label="pencil outline"></ion-icon>
+                            </div>
+                            <div class="in">
+                                <div>빌단가관리</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li class="b_line">
+                        <a onclick="location.href='/main/performance_management'" class="item 2">
+                            <div class="icon-box bg-success">
+                                <ion-icon name="checkmark-done" role="img" class="md hydrated"
+                                    aria-label="checkmark done"></ion-icon>
+                            </div>
+                            <div class="in">
+                                <div>실적관리</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a onclick="location.href='/main/business_evaluation'" class="item 2">
+                            <div class="icon-box bg-success">
+                                <ion-icon name="checkmark-done" role="img" class="md hydrated"
+                                    aria-label="checkmark done"></ion-icon>
+                            </div>
+                            <div class="in">
+                                <div>업장평가</div>
+                            </div>
+                        </a>
+                    </li>
+
+                    <!--
+                        <li>
+                            <a href="/testview/profit_loss" class="item">
+                                <div class="icon-box bg-success">
+                                    <ion-icon
+                                        name="checkmark-done"
+                                        role="img"
+                                        class="md hydrated"
+                                        aria-label="checkmark done"
+                                    ></ion-icon>
+                                </div>
+                                <div class="in">
+                                    <div>손익관리</div>
+                                </div>
+                            </a>
+                        </li>
+                        -->
+                </ul>
+                <% end %>
+                <div class="listview-title" style="font-size: 20px; margin-top: 15px;">소통방</div>
+                <div class="side_menu">
+
+                    <table style="margin-left: auto;margin-right: auto;">
+                        <% if rooms.present? %>
+                        <% rooms.each_slice(3) do |room| %>
+                        <tr>
+                            <% room.each do |info| %>
+                            <td><a href="#" class="item"
+                                    onclick="location.href='/reportrooms/type/<%= info['bb_id'] %>'">
+                                    <div class="chip chip-warning chip2"><%= info['bb_nm_short'] %></div>
+                                </a></td>
+                            <% end %>
+                        </tr>
+                        <% end %>
+                        <% end %>
+                    </table>
+                </div>
+                <div class="listview-title se" style="width:100%; height:14%;display: flex;">
+                    <form class="" action="<%= delete_path %>" method="post">
+                        <input type="hidden" name="_method" value="delete">
+                        <button type="submit" class="btn btn-primary btn-block btn-lg"
+                            style="margin:auto auto;">로그아웃</button>
+                    </form>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>

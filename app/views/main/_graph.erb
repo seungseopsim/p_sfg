@@ -1,0 +1,56 @@
+<!-- 매출 차트 -->
+<div class="section mt-1 mb-1">
+	<div class="card">
+		<div class="card-body">
+			<div class="chart_title" style="margin-left: 5px;">
+				<h4>현재 매출 <%= number_with_delimiter( @sfg['total'].to_i, delimiter: ",")  %></h4>
+			</div>
+			<div style="float: left; width: 50%; text-align:right; margin-top:.65rem; font-size: 14px" >
+					<%= DateTime.current.strftime("%m월%d일 %H:%M") %>
+			</div>		
+			<canvas class="myChart"></canvas> 
+			<script> 
+			var mydataHalf = <%=raw @result2.select{|item| item != 0 } %>; 
+			var mydata = <%=raw @result %>; 
+
+			// var ctx = document.getElementById("myChart"); 
+			var ctx = document.getElementsByClassName("myChart"); 
+			var mixedChart = { 
+				type: 'bar', 
+				labels: ['9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22' ], 
+				datasets : [ 
+
+					{ 
+						label: 'Line Dataset', 
+						data: mydataHalf, 
+						backgroundColor: 'transparent', 
+						borderColor: 'green', 
+						type: 'line' 
+					} ,
+							{ 
+						label: 'Bar Dataset', 
+						data : mydata, 
+						backgroundColor: 'skyblue' 
+					}
+				] 
+			}; 
+			var myChart = new Chart(ctx, { 
+				type: 'bar', 
+				data: mixedChart, 
+				options: { 
+					legend: { 
+						display: false 
+					} 
+				} 
+			});
+			</script>
+
+			<div class="chart_bottom">
+					<div style="width:70%; float:left;">
+						<div onclick="location.href='<%= index_main_path %>'" class="chip chip-warning" style="width:40%;text-align:center;cursor:pointer;">새로고침</div>
+					</div>
+				<a href="/analysis/current"><div style="width:30%; float:left;"> <div class="chip chip-warning" style="width:90%">업장별 보기</div></div></a>
+			</div>
+		</div>
+	</div>
+</div>

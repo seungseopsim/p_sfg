@@ -1,0 +1,172 @@
+<%= content_for :javascript_includes do %> <%= javascript_pack_tag 'reportrooms',
+'data-turbolinks-track': 'reload' %> <% end %> <%= content_for :stylesheet_includes do %>
+<style>
+	button {
+	}
+	.card .card-body {
+		padding: 7px;
+		line-height: 1.4em;
+	}
+
+	.card .card-title {
+		color: #141515;
+		font-size: 18px;
+		font-weight: 700;
+		margin-top: 0.6rem;
+	}
+
+	.card .c_title {
+		color: #141515;
+		font-size: 15px;
+		padding: 5px 10px;
+		font-weight: 700;
+		margin-top: 0.6rem;
+	}
+
+	.card .chart_title {
+		color: #141515;
+		font-size: 18px;
+		font-weight: 700;
+		margin-top: 0.6rem;
+	}
+	.card .listview .in1 {
+		padding-right: 5px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 40%;
+	}
+	.card .listview .in1 .in1body {
+		width: 100%;
+	}
+
+	.card .listview .in1 .in1body .chip {
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		text-align: center;
+		font-size: 16px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		width: 100%;
+	}
+
+	.card .listview .t {
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		text-align: left;
+		font-size: 15px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+
+	.btn_body {
+		padding: 7px;
+	}
+
+	.btn_body .btn {
+		font-size: 13px;
+	}
+</style>
+<% end %>
+
+<!-- App Header -->
+<!-- <div class="appHeader bg-primary scrolled">-->
+<div class="appHeader bg-primary">
+	<div class="left">
+		<a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+			<ion-icon name="menu-outline"></ion-icon>
+		</a>
+	</div>
+	<div class="pageTitle">
+		SFG 보고방
+	</div>
+</div>
+<!-- * App Header -->
+
+<!-- Search Component -->
+<div id="search" class="appHeader">
+	<form class="search-form">
+		<div class="form-group searchbox">
+			<input type="text" class="form-control" placeholder="Search..." />
+			<i class="input-icon">
+				<ion-icon name="search-outline"></ion-icon>
+			</i>
+			<a href="javascript:;" class="ml-1 close toggle-searchbox">
+				<ion-icon name="close-circle"></ion-icon>
+			</a>
+		</div>
+	</form>
+</div>
+<!-- * Search Component -->
+
+<!-- App Capsule -->
+<div id="appCapsule">
+	<%= render 'lists', report: @p00, type: :p00 %>
+	<%= render 'lists', report: @bb101, type: :bb101%>
+	<%= render 'lists', report: @bb102, type: :bb102 %>
+	<%= render 'lists', report: @bb103, type: :bb103 %> 
+	<%= render 'lists', report: @bb104, type: :bb104 %>
+	<%= render 'lists', report:	@bb201, type: :bb201 %> 
+	<%= render 'lists', report: @bb202, type: :bb202 %>
+	<%= render 'lists',	report: @bb203, type: :bb203 %>
+	<%= render 'lists', report: @bb204, type: :bb204 %>
+	<%= render 'lists', report: @bb205, type: :bb205 %>
+	<%= render 'lists', report: @bb206, type: :bb206 %>
+	<%= render 'lists', report: @bb207, type: :bb207 %>
+	<%= render 'lists', report: @bb208, type: :bb208 %>
+</div>
+
+<div class="appBottomMenu">
+	<div class="dropdown">
+		<button
+			class="btn btn-light dropdown-toggle"
+			type="button"
+			data-toggle="dropdown"
+			aria-expanded="false"
+			style="margin-left: 10px;"
+		>
+			보고방선택
+		</button>
+		<div class="dropdown-menu" style="">
+			<% @roomtype.each do |type| %>
+			<a class="dropdown-item" href="/reportrooms/type/<%=type['bb_id'] %>">
+				<%= type['bb_nm']%></a
+			>
+			<% end %>
+		</div>
+	</div>
+
+	<a href="/main" class="item">
+		<div class="col">
+			<ion-icon
+				name="home-outline"
+				role="img"
+				class="md hydrated"
+				aria-label="home outline"
+			></ion-icon>
+		</div>
+	</a>
+
+	<a href="/reportrooms/new" class="item">
+		<div class="col">
+			<ion-icon
+				name="chatbubble-ellipses-outline"
+				role="img"
+				class="md hydrated"
+				aria-label="chatbubble ellipses outline"
+			></ion-icon>
+			<span class="badge badge-danger">글쓰기</span>
+		</div>
+	</a>
+</div>
+
+<%= render 'layouts/sidebar', rooms: @roomtype %>
+
+<!-- ///////////// Js Files ////////////////////  -->
+<!-- Jquery -->
+<script src="/assets/js/lib/jquery-3.4.1.min.js"></script>
+<!-- Bootstrap-->
+<script src="/assets/js/lib/popper.min.js"></script>
+<script src="/assets/js/lib/bootstrap.min.js"></script>

@@ -1,0 +1,176 @@
+<style>
+    textarea.autosize {
+        min-height: 144px;
+        border-radius: 5px;
+    }
+
+    .file {
+        padding-top: 28px;
+        float: left;
+    }
+
+    .submit {
+        float: right;
+        position: relative;
+        top: -20px;
+    }
+
+    .btn2 {
+        font-size: 20px;
+        white-space: nowrap;
+        width: 100%;
+        padding: 0em 1.5em;
+        font-family: Open Sans, Helvetica, Arial, sans-serif;
+        line-height: 18px;
+        display: inline-block;
+        zoom: 1;
+        color: #fff;
+        text-align: center;
+        position: relative;
+        -webkit-transition: border .25s linear, color .25s linear, background-color .25s linear;
+        transition: border .25s linear, color .25s linear, background-color .25s linear;
+        font-weight: bold;
+        width: 130px;
+    }
+
+    .btn2.btn-orange {
+        background-color: #f59e00;
+        border-color: #f59e00;
+        -webkit-box-shadow: 0 3px 0 #b37401;
+        box-shadow: 0 3px 0 #b37401;
+    }
+
+    .btn2.btn-orange:hover {
+        background-color: #dd9003;
+    }
+
+    .btn2.btn-orange:active {
+        top: 3px;
+        outline: none;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+    .btn:hover {
+        color: #ffffff;
+    }
+
+    label {
+        margin-top: 5px;
+    }
+
+    .button-delete-file {
+        background: transparent;
+        color: black;
+        border: 0;
+        padding-right: 20px;
+        cursor: pointer;
+        position: relative;
+        padding: 5px 5px 5px 5px;
+        z-index: 1;
+    }
+
+    .ionico {
+        font-size: 25px;
+        position: relative;
+        top: 9px;
+    }
+</style>
+<%= form_with(model: reportroom, local: true) do |form| %>
+<% if reportroom.errors.any? %>
+<div id="error_explanation">
+    <h2><%= pluralize(reportroom.errors.count, "error") %> prohibited this reportroom from being saved:</h2>
+
+    <ul>
+        <% reportroom.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+        <% end %>
+    </ul>
+</div>
+<% end %>
+
+<div class="field">
+    <select name="reportroom[type]" id="reportroom_type">
+        <option value="default" selected="selected" style="display:none">보고방 선택</option>
+        <% @roomtype.each do |type| %>
+        <option value="<%=type['bb_id'] %>"> <%= type['bb_nm']%></option>
+        <% end %>
+    </select>
+</div>
+
+<div class="field" style="width:100%; margin-top:5px;">
+    <%= form.label '보고내용' %>
+    <%= form.text_area :contents, rows: "6" ,class:"autosize", onkeydown: "TextareaKeydown(event),resize(this)" ,onkeyup:"resize(this)"%>
+</div>
+
+<div class="field" style="width:100%; margin-top:5px;">
+    <%= form.label '향후계획' %>
+    <%= form.text_area :plancontents, rows: "6", class:"autosize",  onkeydown: "TextareaKeydown(event),resize(this)", onkeyup:"resize(this)"%>
+</div>
+
+<div style="margin-top:5px">
+    <%= form.check_box :addresult %>
+    업장 실적 첨부
+</div>
+
+<div class="form-group file" id="fileList">
+    <%= form.button "자료 첨부", type: :button,id:"uploadFile", class:"btn btn2 btn-orange",style: "padding-left: 20px;" %>
+    <%= form.file_field :attachment, multiple: true, style: "display: none;"%>
+<div class="actions submit" style="position: relative; top: 0px;">
+    <%=form.submit "글 등록",id:"submit",class:"btn btn2 btn-orange", onclick: "return Vaildform(event);" %>
+</div>
+</div>
+<br>
+<br>
+
+<div style="padding-bottom:100px"></div>
+<% end %>
+<script>
+    function resize(obj) {
+        obj.style.height = "1px";
+        obj.style.height = (12 + obj.scrollHeight) + "px";
+    }
+
+
+
+    //글목록 추가삭제
+    $(function () {
+        $('#uploadFile').click(addFileForm);
+        $(document).on('click', '.button-delete-file', function (event) {
+            $(this).parent().remove();
+        });
+    });
+
+    var count = 0;
+
+    function addFileForm(event) {
+        var tagPlus = '';
+        var filelistTag = "<div id='file_" + count +
+            "'><input multiple='multiple' type='file' name='reportroom[attachment][]' id='reportroom_attachment' style='display:none;'>";
+        $("#fileList").append(filelistTag);
+        const fileSet = document.querySelector("#file_" + count);
+        const file = fileSet.querySelector("input").click();
+        $("input[type='file']").on('change', function (event) {
+            var selectfileElemnet = event.target;
+            var filelist = selectfileElemnet.files;
+            var filesCnt = filelist.length;
+            if (filesCnt > 1) {
+                var tag = filelist[0].name + '외' + (filelist.length - 1) + '개';
+                tagPlus = "<input value='" + tag + "' readonly='readonly' style='width:88%' type='text' >";
+                tagPlus += "<button class='button-delete-file'>";
+                tagPlus +=
+                    "<ion-icon name='remove-outline' role='img' class='ionico'></ion-icon></button></div>";
+                $("#file_" + count).append(tagPlus);
+                count++;
+            } else {
+                tagPlus = "<input value='" + filelist[0].name +
+                    "' readonly='readonly' style='width:88%' type='text' >";
+                tagPlus += "<button class='button-delete-file'>";
+                tagPlus +=
+                    "<ion-icon name='remove-outline' role='img' class='ionico'></ion-icon></button></div>";
+                $("#file_" + count).append(tagPlus);
+                count++;
+            }
+        });
+    }
+</script>

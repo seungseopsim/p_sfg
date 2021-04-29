@@ -1,0 +1,110 @@
+<% content_for :javascript_includes do %>
+  <%= javascript_pack_tag 'session', 'data-turbolinks-track': 'reload' %>
+<% end %>
+
+
+
+<style> 
+	.centered { 
+	display : table;
+	margin-left: auto;
+	margin-right: auto; } 
+
+	.login-form {
+    display: flex;
+    flex-direction: column;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	}
+	.mb-5{
+	margin-bottom: 5px !important;
+	}
+  .input {
+  font-family: inherit;
+  border-right:0px;
+  border-top:0px;
+  border-left:0px;
+  border-bottom: 2px solid black ;
+  outline: 0;
+  color: $white;
+  background: transparent;
+  transition: border-color 0.2s;
+	}
+</style>
+
+
+<!-- loader -->
+<!-- <div id="loader">
+	<div class="spinner-border text-primary" role="status"></div>
+</div> -->
+<!-- * loader -->
+
+
+<!-- App Capsule -->
+<div id="appCapsule" class="pt-0 centered" style="padding-top: 130px !important;">
+	<% if flash[:error] %>
+	<div class="alert alert-danger" role="alert" id="alert-danger" style="width:100%">
+		<strong>없는 아이디 또는 잘못된 비밀번호입니다.</strong>
+		<button type="button" id="alertclose" class="close" arial-lable="Close" data-dismiss="alert" >
+			<span style="left: 11px;position: relative;top: -7px;" aria-hidden="true">&times;</span>
+		</button>
+	</div>
+<% end %>
+	<div class="login-form mt-1">
+		<div class="section ">
+			<img src="/assets/img/sfg_logo.png" alt="image" class="form-image" style="width : 120px; height:auto;">
+		</div>
+		<div class="section mt-1">
+			<h1>God's Eye</h1>
+		   <!-- <h4>Fill the form to log in</h4> -->
+		</div>
+		<%= form_for(:session, url: signin_path ) do |f| %>	
+			<form action="app-pages.html">
+
+				<div class="section mt-1 mb-5 ">
+
+					<div class="form-group boxed ">			
+						<div >
+						<%= f.text_field :id, class:"input" ,placeholder:"아이디 입력", autocomplete: 'username' %>
+						</div>
+					</div>
+
+					<div class="form-group boxed ">	
+						<div>
+						<%= f.password_field :pw, class:"input" ,placeholder:"비밀번호 입력", autocomplete: 'current-password'%>
+						</div>
+					</div>
+				</div>
+				
+				<div class="section mt-1" style = "padding-top: 10px;">
+
+					<div style="float: left; width: 20%;  height:35px;" >
+
+					</div>
+
+					<div style="float: left; width: 60%;  height:35px;">
+						<%= f.submit "로그인", class: "btn btn-primary btn-block btn-lg" %>        
+					</div>
+					<div style="float: left; width: 20%;  height:35px;">
+
+					</div>
+
+
+				</div>
+
+			</form>
+		<% end %>
+	</div>
+</div>
+
+<!-- * App Capsule -->
+
+
+
+<!-- ///////////// Js Files ////////////////////  -->
+<!-- Jquery -->
+<script src="/assets/js/lib/jquery-3.4.1.min.js"></script>
+<!-- Bootstrap-->
+<script src="/assets/js/lib/popper.min.js"></script>
+<script src="/assets/js/lib/bootstrap.min.js"></script>

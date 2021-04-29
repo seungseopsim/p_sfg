@@ -1,0 +1,237 @@
+<%= content_for :metatage_includes do %>
+<meta name="turbolinks-visit-control" content="reload">
+<% end %>
+<%= content_for :javascript_includes do %>
+<%= javascript_pack_tag 'reportrooms','data-turbolinks-track': 'reload' %>
+<script language='JavaScript' type='text/javascript'>
+    function calcHeight(iframe) {
+        var my_frame = document.getElementById(iframe);
+        var content_height = my_frame.contentWindow.document.getElementById('content').scrollHeight;
+        my_frame.style.height = content_height + 'px';
+    }
+</script>
+<% end %>
+
+<%= content_for :stylesheet_includes do %>
+<style>
+    collapsed {
+        display: hide;
+    }
+
+    .accordion {
+        background: #FE9500;
+    }
+
+    .card .card-body {
+        padding: 7px;
+        line-height: 1.4em;
+    }
+
+    .card .card-title {
+        color: #141515;
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 0.6rem;
+    }
+
+    .card .c_title {
+        color: #141515;
+        font-size: 15px;
+        padding: 5px 10px;
+        font-weight: 700;
+        margin-top: 0.6rem;
+    }
+
+    .card .chart_title {
+        color: #141515;
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 0.6rem;
+    }
+
+    .card .listview .in1 {
+        padding-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .card .listview .in2 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 40%;
+    }
+
+    .card .listview .in2 .chip {
+        height: 30px;
+        line-height: 30px;
+        display: block;
+        text-align: left;
+        font-size: 16px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        padding-left: 15px;
+        width: 100%;
+    }
+
+    .card .listview .in1 .chip {
+        height: 25px;
+        line-height: 25px;
+        display: block;
+        text-align: left;
+        font-size: 16px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        padding-left: 15px;
+        width: 100%;
+    }
+
+    .card .listview .t {
+        height: 18px;
+        line-height: 18px;
+        display: block;
+        text-align: left;
+        font-size: 15px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .btn_body {
+        padding: 7px;
+    }
+
+    .btn_body .btn {
+        font-size: 13px;
+    }
+
+    .iframe100 {
+        display: block;
+        border: none;
+        height: 100vh;
+        width: 100%;
+    }
+
+    .accordion-body {
+        padding: 0px 4px;
+    }
+
+    .show {
+        padding-bottom: 4px;
+    }
+
+    .section-title {
+        font-size: 20px;
+    }
+
+    .inset .accordion {
+        border-radius: 6px;
+        border: 1px solid #e1e1e1;
+        margin-top: 5px;
+    }
+
+    .accordion .accordion-header .btn.collapsed:before {
+        display: none;
+    }
+
+    i {
+        z-index: 99999;
+    }
+</style>
+<% end %>
+
+<!-- App Header -->
+<!-- <div class="appHeader bg-primary scrolled">-->
+
+<div class="appHeader bg-primary">
+    <div class="left">
+        <a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+            <ion-icon name="menu-outline"></ion-icon>
+        </a>
+    </div>
+    <div class="pageTitle">SFG 보고방</div>
+</div>
+<!-- * App Header -->
+
+<!-- App Capsule -->
+<div id="appCapsule">
+    <div class="section inset mt-2">
+        <div class="section-title" id="roomtype" data-type="<%= @bbinfo['bb_id']%>"><%= @bbinfo['bb_nm'] %></div>
+        <%= render 'alertmsg' %>
+        <% if @reports.present? %>
+        <ul class="list-group">
+            <% @reports.each do |report| %>
+            <div class="accordion bg<%= report['id'] %>" id="accordionExample2" <% if report['read'] %>
+                style="background:white">
+                <% else %>
+                >
+                <% end %>
+                <div class="item">
+                    <div class="accordion-header">
+                        <button class="btn collapsed" type="button" data-toggle="collapse"
+                            data-target="#accordion<%= report['id'] %>" aria-expanded="true">
+                            <font id="font<%= report['id'] %>" style="width: 100%;">
+                                <%= report['ccu_nm'] %>(<%= toTimeFormat(report['timetype'], report['created_at']) %>)
+                                <% if isShowModifyMenu(report) %>
+                                <span style="float: right;">
+									<% if isModify(report) %>
+									<%= link_to "수정", edit_reportroom_path(report['id']) %>
+									<% end %>
+                                    <%= link_to "삭제", {action: :destroy, id: report['id']}, method: :delete %>
+                                </span>
+                                <% end %>
+                            </font>
+                        </button>
+                    </div>
+                </div>
+                <div id="accordion<%= report['id'] %>" class="accordion-body collapsing"
+                    data-parent="#accordionExample2">
+                    <iframe src="<%= reportroom_path(report['id']) %>" id="the_iframe<%= report['id'] %>" name=""
+                        title="" frameborder="0" scrolling="no" onload="calcHeight('the_iframe<%= report['id'] %>');"
+                        style="overflow-x:hidden; overflow:auto; width:100%;"></iframe>
+                </div>
+            </div>
+            <% end %>
+        </ul>
+        <% end %>
+    </div>
+</div>
+
+<div class="appBottomMenu">
+    <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"
+            style="margin-left: 10px;">
+            보고방선택
+        </button>
+        <div class="dropdown-menu" style="">
+            <% @roomtype.each do |type| %>
+            <a class="dropdown-item" href="<%= type_reportrooms_path(type['bb_id']) %>">
+                <%= type['bb_nm']%>
+            </a>
+            <% end %>
+        </div>
+    </div>
+
+    <a href="<%= index_main_path %>" class="item">
+        <div class="col">
+            <ion-icon name="home-outline" role="img" class="md hydrated" aria-label="home outline">
+            </ion-icon>
+        </div>
+    </a>
+
+    <a href="<%= new_reportroom_path %>" class="item">
+        <div class="col">
+            <ion-icon name="chatbubble-ellipses-outline" role="img" class="md hydrated"
+                aria-label="chatbubble ellipses outline">
+            </ion-icon>
+            <span class="badge badge-danger">글쓰기</span>
+        </div>
+    </a>
+</div>
+
+<%= render 'layouts/sidebar', rooms: @roomtype %>
+
+<script src="/assets/js/lib/popper.min.js"></script>
+<script src="/assets/js/lib/bootstrap.min.js"></script>
+<!-- ///////////// Js Files ////////////////////  -->

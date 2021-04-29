@@ -1,0 +1,34 @@
+<% if datas.present? %>
+<% datas.each do |key, info| %>
+<% if info.present? %>
+<h1>
+</h1>
+	<li>
+		<a href="#" class="item"  onclick="opentab(event, '<%= key %>')" >
+			<div class="in1">
+				<div class="in1body">
+					<div class="t">
+						<div class="chip chip-warning"><%= key %></div>
+					</div>
+				</div>
+			</div>
+			<div class="in">
+				<div class="in2body">
+					<div class="t"><%= (info[datakey1] * 0.0001).floor(1)  %></div>
+				</div>
+			</div>
+				<div class="in">
+				<div class="in2body">
+					<div class="t"><%= (info[datakey2] * 0.0001).floor(1)  %></div>
+				</div>
+			</div>
+			<div class="in">
+				<div class="in2body">
+					<div class="t"><%= (info[datakey3] * 0.0001).floor(1)  %></div>
+				</div>
+			</div>
+		</a>
+	</li>		
+<% end %>
+<% end %>
+<% end %>

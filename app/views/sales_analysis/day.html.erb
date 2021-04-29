@@ -1,0 +1,349 @@
+<%= content_for :metatage_includes do %>
+  	<meta name="turbolinks-visit-control" content="reload">
+<% end %>
+<%= content_for :stylesheet_includes do %>
+<style>
+	.bootstrap-datetimepicker-widget.dropdown-menu {width: auto;}
+	.datepicker table td a span,
+    .datepicker table td,
+    .datepicker table td span {
+    height: 30px !important;
+    line-height: 30px !important;
+    vertical-align: center;
+    width: auto !important;
+    padding: 0px !important;
+    }
+	.move-icon{
+	position: relative;
+	left: 17px;
+	}
+	.input-group .input-group-text {
+		padding-left : 5px;
+		background: transparent;
+		border: 0;
+		/* border-bottom: 1px solid #E1E1E1; */
+		border-radius: 0;
+		font-size: 20px;
+		font-weight: 400;
+		color: #141515;
+		/* height: 40px; */
+		width: auto;
+		/* padding: 0 10px 0 0; */
+	}
+	.listview {
+		display: block;
+		padding: 0;
+		margin: 0;
+		color: #141515;
+		background: #fff;
+		border-top: 0px solid #E1E1E1;
+		border-bottom: 0px solid #E1E1E1;
+		line-height: 1.3em;
+	}
+
+	.listview > li:after {
+		content: "";
+		display: block;
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 0px;
+		background: #E1E1E1;
+	}
+
+	.listview_new {
+		list-style:none;
+		display: block;
+		padding: 0;
+		margin: 0;
+		color: #141515;
+		background: #fff;
+		line-height: 1.3em;
+	}
+
+	.simple-listview .tabcontent > li .item {
+		padding: 2px 18px;
+		width: 100%;
+		min-height: 30x;
+		display: flex;
+		align-items: center;
+	}
+
+	.simple-listview .tabcontent > li .item .s_item_in1{
+		width: 50%;
+	}
+
+	.simple-listview .tabcontent  > li .item .s_item_in2{
+		text-align: right;
+		padding-right:28px;
+		width: 100%;
+	}	
+
+	.card .card-body {
+		padding: 7px;
+		line-height: 1.4em;
+	}
+
+	.card .title {
+			padding-top : 7px;
+		margin-bottom : -15px;
+	}
+
+	.card .card-title {
+		padding-left:7px;
+		color: #141515;
+		font-size: 18px;
+		margin-top: .6rem;
+		float:left;
+		width: 53%;
+	}
+
+
+	.card .date {
+		float:left;
+		width: 47%;
+	}
+
+	.card .date .form-group {
+
+	}
+
+	.image-listview > li .item {
+		padding: 0px 0px;
+		width: 100%;
+		min-height: 30px;
+		display: flex;
+		align-items: center;
+	}
+
+	.card .listview .in1{
+
+		padding-left : 15px;
+		padding-right : 5px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 35%;
+	}
+	.card .listview .in1 .in1body{
+		width: 100%;
+	}
+
+	.card .listview .in .in2body{
+		width: 100%;
+		margin-right: 0.6rem;
+	}
+
+	.card .listview .in1 .in1body .chip{
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		text-align: center;
+		font-size: 15px;
+		margin-top : 5px;
+		margin-bottom : 5px;
+		width: 100%;
+	}
+
+	.card .listview .t{
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		text-align: right;
+		font-size: 15px;
+
+	}
+
+	.btn_body {
+		padding: 7px;
+	}
+
+	.btn_body .btn {
+		font-size: 13px;
+	}
+</style>
+<% end %>
+
+<%= content_for :javascript_includes do %>
+<script type="text/javascript">
+	$(function () { 
+		$('#datetimepicker1').datetimepicker({ 
+			format: "YYYY-MM-DD", 
+			ignoreReadonly: true,
+			useCurrent: false,
+			language : "ko",
+			widgetPositioning: {
+				horizontal: 'left',
+				vertical: 'bottom'
+			}
+
+		});
+
+		$('#datetimepicker2').datetimepicker({ 
+			format: 'L',
+			language : "ko",
+			useCurrent: false 
+		}); 
+
+		$("#datetimepicker1").on("change.datetimepicker", function (e) { 
+			$('#datetimepicker2').datetimepicker('minDate', e.date);
+		}); 
+
+		$("#datetimepicker1").on("hide.datetimepicker", function (e) { 
+			//alert("/analysis/day?day="+$("#datetimepicker1").find("input").val());
+			window.location.href = "/analysis/day?day="+$("#datetimepicker1").find("input").val();
+		}); 
+
+		$("#datetimepicker2").on("change.datetimepicker", function (e) { 
+			$('#datetimepicker1').datetimepicker('maxDate', e.date); 
+		}); 
+
+	}); 
+
+	function opentab(evt, itemname) {
+
+	  var i, tabcontent, tablinks;
+
+	  tabcontent = document.getElementsByClassName("tabcontent");
+
+	  for (i = 0; i < tabcontent.length; i++) {
+		tabcontent[i].style.display = "none";
+	  }
+
+	  tablinks = document.getElementsByClassName("item");
+
+	  for (i = 0; i < tablinks.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" active", "");
+	  }
+
+		target = document.getElementById(itemname);
+		target.style.display = "block";
+		target.className += " active";
+	}
+
+	$(document).ready(function() {
+		opentab(event, "SFG");
+	});
+</script>
+<% end %>
+	
+<!-- App Header -->
+<!-- <div class="appHeader bg-primary scrolled">-->
+<div class="appHeader bg-primary text-light">
+<div class="left">
+		<a href="#" class="headerButton" data-toggle="modal" data-target="#sidebarPanel">
+			<ion-icon name="menu-outline"></ion-icon>
+		</a>
+</div>
+	<div class="pageTitle">매출 분석</div>
+</div>
+<!-- * App Header -->
+
+
+<!-- App Capsule -->
+<div id="appCapsule">
+	<div class="section mt-1 mb-1">
+		<div class="card">
+			<div class="title">
+				 <div class="card-title">일별 매출 (단위 만원)</div>
+				 <div class="date">				
+					<!-- <div class="form-group"> -->
+						<div class="input-group date1" id="datetimepicker1" data-target-input="nearest" style="left:-23px"> 
+							<input type="text" class="form-control datetimepicker-input" data-target="#datetimepicker1" required readonly="readonly" value="<%=@dayvalue%>" style="left:10px" > 
+							<div class="input-group-append move-icon" data-target="#datetimepicker1" data-toggle="datetimepicker"> 
+								<div class="input-group-text">
+									<i class="fa fa-calendar"></i>
+								</div> 
+							</div> 
+						</div>  
+					<!-- </div>--> 	
+				 </div>
+			</div>
+
+			<div class="card-body" id="cardbody">
+				<ul class="listview image-listview">
+					<% if @sfg.present? %>						
+					<li>
+						<a class="item" onclick="opentab(event, 'SFG')" >
+							<div class="in1">
+								<div class="in1body">
+									<div class="t">
+										<div class="chip chip-warning">SFG</div>
+									</div>
+								</div>
+							</div>
+							<div class="in">
+								<div class="in2body">
+									<% if @sfg['total'].present? %>
+									<div class="t" > <%= number_with_delimiter( (@sfg['total'] * 0.0001).to_i , delimiter: ",") %></div>
+									<% end %>
+								</div>
+							</div>
+						</a>
+					</li>
+					<% end %>
+					<% if @business.present? %>
+					<% for index in 0...@business.length do %>
+					<li>
+						<a class="item" onclick="opentab(event, '<%= @business[index]['s_nm_short'] %>')" >
+							<div class="in1">
+								<div class="in1body">
+									<div class="t">
+										<div class="chip chip-warning"><%= @business[index]['s_nm_short'] %></div>
+									</div>
+								</div>
+							</div>
+							<div class="in">
+								<div class="in2body">
+									<div class="t"><%= number_with_delimiter( (@business[index]['total'] * 0.0001).to_i, delimiter: ",") %></div>
+								</div>
+							</div>
+						</a>
+					</li>
+					<% end %>
+					<% end %>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="section mt-1 mb-1">
+		<div class="card">
+			<div class="card-body">
+				<ul class="listview_new simple-listview">
+					<% @shops.each do |key, value| %>
+						<div id="<%= "#{key}" %>" class="tabcontent" style="display: none;" >
+							<% value.each do |info| %>
+								<li>
+									<div class="item">
+										<div class ="s_item_in1"><%= info['shop_nm'].first(5) %></div>					
+										<div class ="s_item_in2"> <%= number_with_delimiter( (info['total'] * 0.0001).to_i, delimiter: ",") %> </div>
+									</div>
+								</li>
+							<% end %>
+						</div>
+					<% end %>	
+					<div id="SFG" class="tabcontent" style="display: none;" >
+						<% @shops.select{|key, value| key != '자작'}.each do |key, value| %>
+							<% value.each do |info| %>
+								<li>
+									<div class="item">
+										<div class ="s_item_in1"><%= info['shop_nm'].first(5) %></div>					
+										<div class ="s_item_in2"> <%= number_with_delimiter( (info['total'] * 0.0001).to_i, delimiter: ",") %> </div>
+									</div>
+								</li>
+							<% end %>
+						<% end %>	
+					</div>
+				</ul>					
+			</div>
+		</div>
+	</div>
+
+</div>
+<%= render 'layouts/sidebar', rooms: @roomtype %>
+<%= render 'bottommenu' %>	
+
+<script src="/assets/js/lib/popper.min.js"></script>
+<script src="/assets/js/lib/bootstrap.min.js"></script>

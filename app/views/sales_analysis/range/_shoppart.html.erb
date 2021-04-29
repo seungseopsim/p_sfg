@@ -1,0 +1,36 @@
+<% if value.present? %>
+<% value.each do |sub, info| %>
+<li>
+	<div class="item">
+		<div class ="s_item_in1"><%= sub.first(5) %></div>						
+		<div class ="s_item_in2">
+			<% if info[:first].present? %>
+			<%= number_with_delimiter( (info[:first] * 0.0001).to_i, delimiter: ",") %>
+			<% end %>
+		</div>
+		<div class ="s_item_in2">
+			<% if info[:second].present? %>
+			<%= number_with_delimiter( (info[:second] * 0.0001).to_i, delimiter: ",") %>
+			<% end %>
+		</div>
+		<div class="s_item_in2">
+			<% if info[:per].present? %>
+			<font
+			<% if info[:per] >= 0.0 %>
+				color="blue">
+				<% if info[:per] == (1.0/0) %>
+				-------
+				<%else %>	
+				▲<%= info[:per].abs %>
+				<% end %>
+			<%else %>
+				color="red">▽
+				<%= info[:per].abs %>
+			<% end %>
+			</font>
+			<% end %>
+		</div>
+	</div>	
+</li>
+<% end %>
+<% end %>
