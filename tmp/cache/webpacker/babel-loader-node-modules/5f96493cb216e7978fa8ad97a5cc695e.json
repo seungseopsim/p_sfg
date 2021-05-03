@@ -1,1 +1,0 @@
-{"ast":null,"code":"$(\"#alert-danger\").hide();","map":{"version":3,"sources":["/workspace/CUBE_DB_CONNECT_1/app/javascript/packs/session.js"],"names":["$","hide"],"mappings":"AAAAA,CAAC,CAAC,eAAD,CAAD,CAAmBC,IAAnB","sourcesContent":["$(\"#alert-danger\").hide();\n"]},"metadata":{},"sourceType":"module"}

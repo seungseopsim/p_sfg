@@ -12,6 +12,8 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
+/log/development.log
+/tmp/development_secret.txt
 
 # keep folders
 !**/.keep
