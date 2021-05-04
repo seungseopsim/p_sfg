@@ -5,9 +5,27 @@
 		<li>
 			<div class="item">
 				<div class ="s_item_in1"><%= shop['shop_nm'].first(5) %></div>					
-				<div class ="s_item_in2"><%= (shop[datakey1] * 0.0001).floor(1)  %></div>
-				<div class ="s_item_in2"><%= (shop[datakey2] * 0.0001).floor(1)  %></div>
-				<div class ="s_item_in2"><%= (shop[datakey1] * 0.0001).floor(1)  %></div>
+				<div class ="s_item_in2">
+				<% if shop[datakey1].present? %>
+					<%= (shop[datakey1] * 0.0001).floor(1)  %>
+				<% else %>
+					-
+				<% end %>
+				</div>
+				<div class ="s_item_in2">
+				<% if shop[datakey2].present? %>
+					<%= (shop[datakey2] * 0.0001).floor(1)  %>
+				<% else %>
+					-
+				<% end %>
+				</div>
+				<div class ="s_item_in2">
+				<% if shop[datakey3].present? %>
+					<%= (shop[datakey3] * 0.0001).floor(1)  %>
+				<% else %>
+					-
+				<% end %>
+				</div>
 			</div>	
 		</li>
 	<% end %>
