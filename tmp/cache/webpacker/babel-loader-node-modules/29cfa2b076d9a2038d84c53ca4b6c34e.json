@@ -1,1 +1,0 @@
-{"ast":null,"code":"$(\".alert\").fadeout(1000);","map":{"version":3,"sources":["/workspace/CUBE_DB_CONNECT_1/app/javascript/packs/session.js"],"names":["$","fadeout"],"mappings":"AAAAA,CAAC,CAAC,QAAD,CAAD,CAAYC,OAAZ,CAAoB,IAApB","sourcesContent":["$(\".alert\").fadeout(1000);"]},"metadata":{},"sourceType":"module"}
