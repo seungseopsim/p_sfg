@@ -21,7 +21,9 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
-/public/packs
+/public/uploads/attachfile/*
+/public/uploads/tmp/*
+/public/packs/*
 /public/packs-test
 /node_modules
 
