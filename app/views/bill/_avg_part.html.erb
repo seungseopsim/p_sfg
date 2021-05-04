@@ -14,17 +14,35 @@
 			</div>
 			<div class="in">
 				<div class="in2body">
-					<div class="t"><%= (info[datakey1] * 0.0001).floor(1)  %></div>
+					<div class="t">
+						<% if info[datakey1].present? %>
+							<%= (info[datakey1] * 0.0001).floor(1)  %>
+						<% else %>
+							-
+						<% end %>
+					</div>
 				</div>
 			</div>
 				<div class="in">
 				<div class="in2body">
-					<div class="t"><%= (info[datakey2] * 0.0001).floor(1)  %></div>
+					<div class="t">						
+						<% if info[datakey2].present? %>
+							<%= (info[datakey2] * 0.0001).floor(1)  %>
+						<% else %>
+							-
+						<% end %>
+					</div>
 				</div>
 			</div>
 			<div class="in">
 				<div class="in2body">
-					<div class="t"><%= (info[datakey3] * 0.0001).floor(1)  %></div>
+					<div class="t">
+						<% if info[datakey3].present? %>
+							<%= (info[datakey3] * 0.0001).floor(1)  %>
+						<% else %>
+							-
+						<% end %>
+					</div>
 				</div>
 			</div>
 		</a>
