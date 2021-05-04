@@ -1,0 +1,10 @@
+/* line 4, app/assets/stylesheets/sessions.scss */
+#alertclose {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+/* line 10, app/assets/stylesheets/sessions.scss */
+#reportbtn {
+  background-color: transparent;
+}
