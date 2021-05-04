@@ -76,7 +76,24 @@
 				<tr>
 				  <th colspan="2" scope="row" style="padding-left: 10px;">매출 리스트</th>			
 				  <td></td>	
+					
+							
 				</tr>
+				  
+				<tr  style="border-left: 1px solid #cdd0d4; border-top: 1px solid #cdd0d4; border-right: 1px solid #cdd0d4;">
+				  <th colspan="2" scope="row" style="padding-left: 10px;">당월(<%=@sell_month[0]["month"] %>월)</th>			
+				  <td><%= (@sell_month[0]["sales"] / @sell_month[0]["days"] ).floor(2) %>억</td>	
+				</tr>
+				  
+				<tr  style="border-left: 1px solid #cdd0d4; border-bottom: 1px solid #cdd0d4; border-right: 1px solid #cdd0d4;">
+				  <th colspan="2" scope="row" style="padding-left: 10px;">전월(<%=@sell_month[1]["month"] %>월)</th>			
+				  <td> <%= (@sell_month[1]["sales"] / @sell_month[1]["days"] ).floor(2) %>억 </td>	
+				</tr>  
+				  
+				<tr>
+					<td></td>	
+				</tr>
+				  
 				<% if @latelysales_list.present? %>			  
 					<% for i in 0...@latelysales_list.length - 3 do %>
 						<tr style="border-left: 1px solid #cdd0d4;">

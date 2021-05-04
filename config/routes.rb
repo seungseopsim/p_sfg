@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 		get 'sales_report',		 			to: "main#sales_report" 
 		get 'performance_management',		to: "main#performance_management" 
 		get 'business_evaluation',		    to: "main#business_evaluation" 
+		get 'toilet_check',		    		to: "main#toilet_check" 
 	end
 	
 	root 						to: 'sessions#new'

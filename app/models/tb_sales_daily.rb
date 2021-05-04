@@ -435,6 +435,20 @@ queryresult = connection.select_all(query)
 	end
 	
 	
+	
+		def self.sell_month
+
+		
+		query = "SELECT EXTRACT(MONTH FROM bsn_dt ) as month, count(distinct bsn_dt) as days,
+   round(SUM(sb_real_amt)/100000000,1) as sales
+     FROM tb_sales_daily
+     where bsn_dt >= DATE_SUB(  CURDATE(),  INTERVAL 2 month  ) AND shop_nm not like '%자작%'
+     GROUP BY EXTRACT(MONTH FROM bsn_dt)
+     order by month DESC limit 2";
+		
+		return connection.select_all(query)
+	end
+	
 	def self.latelysales
 
 		

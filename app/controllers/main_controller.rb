@@ -9,7 +9,7 @@ class MainController < ApplicationController
 		@companylist_bottom = TbSfgshwng.getcompanylist_bottom
 		
 		@latelysales_list = TbSalesDaily.latelysales
-		
+		@sell_month = TbSalesDaily.sell_month
 		
 	
 		
