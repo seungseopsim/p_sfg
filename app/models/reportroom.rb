@@ -111,7 +111,7 @@ class Reportroom < ApplicationRecord
 		 		connection.update(sql)
 			end
 		rescue ActiveRecord::RecordInvalid => exception
-			puts "Reportroom updateReport Error #{exception}"
+			Rails.logger.error "Reportroom updateReport Error #{exception}"
 			Rollback			
 		end
 	end
@@ -124,7 +124,7 @@ class Reportroom < ApplicationRecord
 				connection.delete("DELETE FROM reportrooms WHERE id = '#{_id}'; " )
 			end
 		rescue ActiveRecord::RecordInvalid => exception
-			puts "Reportroom deleteReport Error #{exception}"
+			Rails.looger.error "Reportroom deleteReport Error #{exception}"
 			result = false
 			Rollback			
 		end

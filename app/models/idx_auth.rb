@@ -9,7 +9,7 @@ class IdxAuth < ApplicationRecord
 			return nil
 		end
 		
-		return connection.select_one("SELECT %{col} FROM idx_auth WHERE idx_ccu_id = '%{id}' AND mlevel != %{level}; " % [col: @@col, level: SessionsHelper::NOUSER, id: _userinfo['idx_ccu_id']])
+		return connection.select_one("SELECT %{col} FROM idx_auth WHERE binary(idx_ccu_id) = '%{id}' AND mlevel != %{level}; " % [col: @@col, level: SessionsHelper::NOUSER, id: _userinfo['idx_ccu_id']])
 	end
 	
 	def self.GetUserInfo_byToken(_token)

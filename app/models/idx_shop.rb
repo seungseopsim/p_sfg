@@ -71,7 +71,7 @@ class IdxShop < ApplicationRecord
 			result = connection.execute(query)
 			
 		rescue ActiveRecord::ActiveRecordError => exception
-			logger.error "IDX_SHOP Insert Error #{exception}"
+			Rails.logger.error "IDX_SHOP Insert Error #{exception}"
 			next
 		end
 			if bInsert

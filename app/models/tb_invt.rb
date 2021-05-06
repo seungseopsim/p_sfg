@@ -14,12 +14,12 @@ class TbInvt < ApplicationRecord
 			@@insertThread = Thread.new do
 				Rails.application.executor.wrap do
 					insertdata = insertdata(_datas)
-					logger.info "TB_INVT INSERT DATA CNT #{insertdata}"
+					Rails.logger.info "TB_INVT INSERT DATA CNT #{insertdata}"
 					@@insertThread = nil
 				end
 			end
 		rescue RuntimeError => runtimeerror
-			logger.error "TB_INVT RuntimeError #{runtimeerror}"
+			Rails.logger.error "TB_INVT RuntimeError #{runtimeerror}"
 			@@insertThread.exit
 			@@insertThread = nil
 		end
@@ -34,11 +34,12 @@ class TbInvt < ApplicationRecord
 	
 	private
 	def self.insertdata(_datas)
+		cnt = 0
 		if _datas.blank?
-			return
+			Rails.logger.info "TB_INVT CUBE DATA CNT #{cnt}"
+			return cnt
 		end	
 		
-		cnt = 0
 		_datas.each do |data|
 		begin
 			so_date = data['SO_DATE'].blank? ? 'NULL' : "'#{data['SO_DATE'].strftime("%Y-%m-%d %H:%M:%S")}'"
@@ -57,14 +58,16 @@ class TbInvt < ApplicationRecord
 					
 			query = "INSERT INTO tb_invt (%{col}) VALUES( %{val} ); " % [col: COL, val: value ]
 			result = connection.execute(query)
-						
+		rescue ActiveRecord::RecordNotUnique
+			next		
 		rescue ActiveRecord::ActiveRecordError => exception
-			logger.error "TB_INVT Insert Error #{exception}"
+			Rails.logger.error "TB_INVT Insert Error #{exception}"
 			next
 		end
 			cnt += 1
 		end	
 	
+		Rails.logger.info "TB_INVT CUBE DATA CNT #{_datas.length} : Insert #{cnt}"
 		return cnt
 	end
 

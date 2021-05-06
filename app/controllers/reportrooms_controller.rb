@@ -219,8 +219,29 @@ class ReportroomsController < ApplicationController
       format.html { redirect_to type_reportrooms_path( @roomtype['bb_id']), notice: '성공적으로 삭제 되었습니다.' }
       format.json { head :no_content }
     end
-
   end
+	
+
+  # 파일 다운로드 처리
+  def download
+  	dparam = params.permit(:rid, :fname)
+	if dparam.nil?
+	   	render status: 400
+		return
+	end
+	  
+	dfname = dparam[:fname]  
+	  
+    findfile = Attachfile.findfile(dparam[:rid], dfname)
+	if findfile.nil?
+		render status: 400
+		return
+	end
+
+	filedata = findfile.read
+	send_data filedata, filename: dfname, type: findfile.content_type, x_sendfile: true
+  end	
+	
 
   private
     # Use callbacks to share common setup or constraints between actions.

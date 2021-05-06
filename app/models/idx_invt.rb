@@ -72,7 +72,7 @@ class IdxInvt < ApplicationRecord
 			result = connection.execute(query)
 
 		rescue ActiveRecord::ActiveRecordError => exception
-			logger.error "IDX_INVT INSERT Error #{exception}"
+			Rails.logger.error "IDX_INVT INSERT Error #{exception}"
 			next
 		end
 			if bInsert
@@ -81,8 +81,8 @@ class IdxInvt < ApplicationRecord
 				updateCnt += 1
 			end
 		end	
-	
-		return "Insert:#{insertCnt} / Update:#{updateCnt}"
+
+		return "#Insert:#{insertCnt} / Update:#{updateCnt}"
 	end
 
 	

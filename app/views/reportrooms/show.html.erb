@@ -296,7 +296,7 @@
             <li class="list-group-item listFile">
                 <a href="<%=file.url %>" class="popimg" data-lightbox="data-set"><span class="fancy"><img src='<%=file.url %>'
                         style="width:120px;height:120px;border-radius:4px;"></span></a>
-                <a href="<%=file.url %>" id="imgDown" download="<%=file.identifier %>"
+                <a href="<%=download_reportrooms_path(rid: @reportroom['id'], fname: file.identifier)%>" id="imgDown" download="<%=file.identifier %>"
                     class="btn btn--diagonal btn--orange">Download</a>
             </li>
             <% end %>
@@ -305,7 +305,7 @@
             <% if key == :video %>
             <li class="list-group-item listFile">
                 <% value.each do |file| %>
-                <a style="text-decoration:none;" download="<%=file.identifier %>" href="<%=file.url %>">
+                <a style="text-decoration:none;" download="<%=download_reportrooms_path(rid: @reportroom['id'], fname: file.identifier)%>" href="<%=file.url %>">
                     <i class="fas fa-video fa-5x"></i><%= file.identifier %>
                 </a>
                 <% end %>
@@ -314,7 +314,7 @@
             <% if key == :file %>
             <li class="list-group-item listFile">
                 <% value.each do |file| %>
-                <a style="text-decoration:none;" download="<%=file.identifier %>" href="<%=file.url %>">
+                <a style="text-decoration:none;" download="<%=download_reportrooms_path(rid: @reportroom['id'], fname: file.identifier)%>" href="<%=file.url %>">
                     <i class="fas fa-file fa-5x" ></i>
                 </a>
 				<br>

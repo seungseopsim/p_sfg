@@ -16,16 +16,16 @@ class LinkController < ApplicationController
 	
 	#일별 식자재비율	
 	def cos_daily
-		cubedata = Cubedb::VShCosDaliy.selectall
-		#render json: cubedata
-		#return
+		day = day_param
+		cubedata = Cubedb::VShCosDaliy.selectall(day)
 		data = TbCosDaily.insert(cubedata)
 		render json: "COS_DAILY CUBE DATA CNT #{cubedata.length} : #{data}"
 	end
 	
 	#일별 마감매출
 	def sales_daily
-		cubedata = Cubedb::VShSalesDaily.selectall
+		day = day_param
+		cubedata = Cubedb::VShSalesDaily.selectall(day)
 		#render json: cubedata
 		data = TbSalesDaily.insert(cubedata)
 		render json: "SALES_DAILY CUBE DATA CNT #{cubedata.length} : #{data}"
@@ -33,7 +33,8 @@ class LinkController < ApplicationController
 	
 	#메뉴별 판매현황
 	def sales_detail
-		cubedata = Cubedb::VShSalesDetail.selectall
+		day = day_param
+		cubedata = Cubedb::VShSalesDetail.selectall(day)
 	    data = TbSalesDetail.insert(cubedata)
 		#render json: cubedata.length
 		render json: "SALES_DETAIL CUBE DATA CNT #{cubedata.length} : #{data}"
@@ -41,7 +42,8 @@ class LinkController < ApplicationController
 	
 	#빌 단위 판매현황
 	def sales_bill
-		cubedata = Cubedb::VShSalesBill.selectall
+		day = day_param
+		cubedata = Cubedb::VShSalesBill.selectall(day)
 		data = TbSalesBill.insert(cubedata)
 		#render json: cubedata
 		render json: "SALES_BILL CUBE DATA CNT #{cubedata.length} : #{data}"
@@ -49,14 +51,16 @@ class LinkController < ApplicationController
 	
 	# 사업현황
 	def so_detail
-		cubedata = Cubedb::VShSoDetail.selectall
+		day = day_param
+		cubedata = Cubedb::VShSoDetail.selectall(day)
 		data = TbSoDetail.insert(cubedata)
 		render json: "SO_DETAIL CUBE DATA CNT #{cubedata.length} : #{data}"
 	end
 	
 	#선불카드 사용현황
 	def ppc_use
-		cubedata = Cubedb::VShPpcUse.selectall
+		day = day_param
+		cubedata = Cubedb::VShPpcUse.selectall(day)
 		data = TbPpcUse.insert(cubedata)
 		#render json: cubedata
 		render json: "PPC_USE CUBE DATA CNT #{cubedata.length} : #{data}"
@@ -64,7 +68,8 @@ class LinkController < ApplicationController
 	
 	# 선불카드 적립현황
 	def ppc_save
-		cubedata = Cubedb::VShPpcSave.selectall
+		day = day_param
+		cubedata = Cubedb::VShPpcSave.selectall(day)
 		data = TbPpcSave.insert(cubedata)
 		#render json: cubedata
 		render json: "PPC_SAVE CUBE DATA CNT #{cubedata.length} : #{data}"
@@ -72,7 +77,8 @@ class LinkController < ApplicationController
 	
 	# 주요 식자재 재고현황 및 수율
 	def tbinvt
-		cubedata = Cubedb::VShInvt.selectall
+		day = day_param
+		cubedata = Cubedb::VShInvt.selectall(day)
 		data = TbInvt.insert(cubedata)
 		#render json: cubedata
 		render json: "TB_INVT CUBE DATA CNT #{cubedata.length} : #{data}"
@@ -106,6 +112,26 @@ class LinkController < ApplicationController
 	private
 	def appsetting_params
 		params.permit(:token, :msgtoken, :os_type)
+	end
+	
+    def day_param
+		param = params.permit(:day)
+		
+		day = param[:day]
+		if(day.present? && date_valid?(day))
+			return day
+		else
+			return nil 
+		end
+    end
+	
+	def date_valid?(date)
+		format = '%Y-%m-%d'
+		DateTime.strptime(date, format) 
+		Time.zone.iso8601(date)
+		true
+	rescue ArgumentError
+		false
 	end
 	
 end

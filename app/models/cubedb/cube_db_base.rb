@@ -17,9 +17,9 @@ class Cubedb::CubeDbBase
 			queryresult.each do |row|
 				result = row
 			end
-			puts "rows #{queryresult.affected_rows}"
+			Rails.logger.debug "rows #{queryresult.affected_rows}"
 		rescue TinyTds::Error => exception
-			puts "Cubedb::CubeDbBase Error #{exception}"
+			Rails.logger.error "Cubedb::CubeDbBase Error #{exception}"
 		ensure
 			if !client.nil?
 				client.close
@@ -47,10 +47,10 @@ class Cubedb::CubeDbBase
 			queryresult.each do |row|
 				result.push(row)
 			end
-			puts "rows #{queryresult.affected_rows}"
+			Rails.logger.debug "rows #{queryresult.affected_rows}"
 			
 		rescue TinyTds::Error => exception
-			puts "Cubedb::CubeDbBase Error #{exception}"
+			Rails.logger.error "Cubedb::CubeDbBase Error #{exception}"
 		ensure
 			if !client.nil?
 				client.close
@@ -69,7 +69,7 @@ class Cubedb::CubeDbBase
 		begin
 			client = TinyTds::Client.new username: 'sh_mappif', password: 'shmappif20@)',  host: '182.162.136.249', port: 1198, database: 'CUBECENTER', timeout: 60
 		rescue  TinyTds::Error => exception
-			puts "Cubedb::CubeDbBase Error #{exception}"
+			Rails.logger.error "Cubedb::CubeDbBase Error #{exception}"
 		end
 		
 		return client

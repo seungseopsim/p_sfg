@@ -14,12 +14,12 @@ class TbSoDetail < ApplicationRecord
 			@@insertThread = Thread.new do
 				Rails.application.executor.wrap do
 					insertdata = insertdata(_datas)
-					logger.info "TB_SO_DETAIL INSERT DATA CNT #{insertdata}"
+					Rails.logger.info "TB_SO_DETAIL INSERT DATA CNT #{insertdata}"
 					@@insertThread = nil
 				end
 			end
 		rescue RuntimeError => runtimeerror
-			logger.error "TB_SO_DETAIL RuntimeError #{runtimeerror}"
+			Rails.logger.error "TB_SO_DETAIL RuntimeError #{runtimeerror}"
 			@@insertThread.exit
 			@@insertThread = nil
 		end
@@ -36,6 +36,7 @@ class TbSoDetail < ApplicationRecord
 	def self.insertdata(_datas)
 		cnt = 0
 		if _datas.blank?
+			Rails.logger.info "SO_DETAIL CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 
@@ -62,14 +63,16 @@ class TbSoDetail < ApplicationRecord
 					
 			query = "INSERT INTO tb_so_detail (%{col}) VALUES( %{val} ); " % [col: COL, val: value ]
 			result = connection.execute(query)
-
+		rescue ActiveRecord::RecordNotUnique
+			next
 		rescue ActiveRecord::ActiveRecordError => exception
-			logger.error "TB_SO_DETAIL Insert Error #{exception}"
+			Rails.logger.error "TB_SO_DETAIL Insert Error #{exception}"
 			next
 		end
 			cnt += 1
 		end	
 	
+		Rails.logger.info "SO_DETAIL CUBE DATA CNT #{_datas.length} : Insert #{cnt}"
 		return cnt
 	end
 

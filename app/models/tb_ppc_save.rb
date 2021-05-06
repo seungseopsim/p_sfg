@@ -14,12 +14,12 @@ class TbPpcSave < ApplicationRecord
 			@@insertThread = Thread.new do
 				Rails.application.executor.wrap do
 					insertdata = insertdata(_datas)
-					logger.info "TB_PPC_SAVE INSERT DATA CNT #{insertdata}"
+					Rails.logger.info "TB_PPC_SAVE INSERT DATA CNT #{insertdata}"
 					@@insertThread = nil
 				end
 			end
 		rescue RuntimeError => runtimeerror
-			logger.error "TB_PPC_SAVE RuntimeError #{runtimeerror}"
+			Rails.logger.error "TB_PPC_SAVE RuntimeError #{runtimeerror}"
 			@@insertThread.exit
 			@@insertThread = nil
 		end
@@ -34,11 +34,13 @@ class TbPpcSave < ApplicationRecord
 	
 	private
 	def self.insertdata(_datas)
-		if _datas.blank?
-			return
-		end	
 		
 		cnt = 0
+		if _datas.blank?
+			Rails.logger.info "PPC_SAVE CUBE DATA CNT #{cnt}"
+			return cnt
+		end	
+
 		_datas.each do |data|
 		begin
 			shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
@@ -57,14 +59,16 @@ class TbPpcSave < ApplicationRecord
 					
 			query = "INSERT INTO tb_ppc_save (%{col}) VALUES( %{val} ); " % [col: COL, val: value ]
 			result = connection.execute(query)
-						
+		rescue ActiveRecord::RecordNotUnique
+			next			
 		rescue ActiveRecord::ActiveRecordError => exception
-			logger.error "TB_PPC_SAVE Insert Error #{exception}"
+			Rails.logger.error "TB_PPC_SAVE Insert Error #{exception}"
 			next
 		end
 			cnt += 1
 		end	
 	
+		Rails.logger.info "PPC_SAVE CUBE DATA CNT #{_datas.length} : Insert #{cnt}"
 		return cnt
 	end
 		

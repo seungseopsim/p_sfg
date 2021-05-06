@@ -55,7 +55,7 @@ class Attachfile < ApplicationRecord
 				Attachfile.where(reportid: _reportid).delete_all
 			end
 		rescue ActiveRecord::RecordInvalid => exception
-			puts "Reportroom NewReport Error #{exception}"
+			Rails.logger.error "Reportroom NewReport Error #{exception}"
 			result = false
 			Rollback
 		end
@@ -92,6 +92,22 @@ class Attachfile < ApplicationRecord
 		
 		if filelists.present?
 			result[:file] = filelists
+		end
+		
+		return result
+	end
+	   
+	def self.findfile(_reportid, _filename)
+		attachfiles = Attachfile.select(:id, :reportid, :filename).where(reportid: _reportid)		
+		
+		result = nil
+		attachfiles.each do |info|
+			info.filename.each do |file|
+				if file.identifier == _filename
+					result = file
+					break
+				end
+			end
 		end
 		
 		return result

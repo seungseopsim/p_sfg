@@ -14,12 +14,12 @@ class TbCosDaily < ApplicationRecord
 			@@insertThread = Thread.new do
 				Rails.application.executor.wrap do
 					insertdata = insertdata(_datas)
-					logger.info "TB_COS_DAILY INSERT DATA CNT #{insertdata}"
+					Rails.logger.info "TB_COS_DAILY INSERT DATA CNT #{insertdata}"
 					@@insertThread = nil
 				end
 			end
 		rescue RuntimeError => runtimeerror
-			logger.error "TB_COS_DAILY RuntimeError #{runtimeerror}"
+			Rails.logger.error "TB_COS_DAILY RuntimeError #{runtimeerror}"
 			@@insertThread.exit
 			@@insertThread = nil
 		end
@@ -37,6 +37,7 @@ class TbCosDaily < ApplicationRecord
 		cnt = 0
 				
 		if _datas.blank?
+			Rails.logger.info "COS_DAILY CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -55,13 +56,16 @@ class TbCosDaily < ApplicationRecord
 			query = "INSERT INTO tb_cos_daily (%{col}) VALUES( %{val} ); " % [col: COL, val: value ]
 			result = connection.execute(query)
 			
+		rescue ActiveRecord::RecordNotUnique
+			next
 		rescue ActiveRecord::ActiveRecordError => exception
-			logger.error "TB_COS_DAILY Insert Error #{exception}"
+			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 			next
 		end
 			cnt += 1
 		end	
-	
+		
+		Rails.logger.info "COS_DAILY CUBE DATA CNT #{_datas.length} : Insert #{cnt}"
 		return cnt
 	end
 	

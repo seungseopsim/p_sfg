@@ -16,8 +16,8 @@ Rails.application.routes.draw do
 		collection do
 			get 'typelist',		to: "reportrooms#typelist", as: :typelist
 			get 'type/:type',	to: "reportrooms#type", 	as: :type
-			get 'showimg',	    to: "reportrooms#showimg", 	as: :showimg
 			post 'read',		to: "reportrooms#read"
+			get 'download',		to: "reportrooms#download"
 		end
 	end
 	

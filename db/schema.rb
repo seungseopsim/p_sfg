@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.string "remember_token"
     t.integer "mlevel", comment: "권한레벨"
     t.string "msg_token"
+    t.integer "plevel", limit: 1
     t.index ["idx_ccu_id"], name: "idx_ccu_id"
   end
 
@@ -167,19 +168,19 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.integer "gdmr_sort", comment: "소분류 정렬"
   end
 
-  create_table "idx_invt", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 20, null: false
-    t.string "s_id", limit: 20, null: false
-    t.string "shop_id", limit: 20, null: false
-    t.string "gd_id", limit: 20, null: false
+  create_table "idx_invt", primary_key: ["h_id", "s_id", "shop_id", "gd_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.string "gd_id", limit: 10, null: false
     t.string "gd_nm", limit: 100
-    t.string "unit_id", limit: 20
-    t.string "gdmr_id", limit: 20
-    t.string "live_yn", limit: 2
-    t.integer "gd_bsn_unit_per"
-    t.string "gd_bsn_unit_id", limit: 20
-    t.float "gd_stk_gd_per"
-    t.text "memo"
+    t.string "unit_id", limit: 10
+    t.string "gdmr_id", limit: 10
+    t.string "live_yn", limit: 1
+    t.decimal "gd_bsn_unit_per", precision: 6, scale: 2
+    t.string "gd_bsn_unit_id", limit: 10
+    t.decimal "gd_stk_gd_per", precision: 6, scale: 2
+    t.string "memo", limit: 200
     t.string "cret_usrid", limit: 20
     t.datetime "cret_dt"
     t.string "mod_usrid", limit: 20
@@ -215,130 +216,29 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.string "plcat1_nm", limit: 20
   end
 
-  create_table "idx_shop", primary_key: "SHOP_ID", id: :string, limit: 10, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "H_ID", limit: 10
-    t.string "S_ID", limit: 10
-    t.string "H_NM", limit: 50
-    t.string "S_NM", limit: 50
-    t.string "SHOP_NM", limit: 50
-    t.string "SHOPPT_NM", limit: 50
-    t.string "IF_ID", limit: 20
-    t.string "SHOP_SUW_ID", limit: 10
-    t.string "SHOP_BIZ_NO", limit: 15
-    t.string "SHOP_ONR_NM", limit: 30
-    t.string "SHOP_KEY_TEL", limit: 15
-    t.string "SHOP_ADS_INFO", limit: 100
-    t.string "B_ID", limit: 10
-    t.string "MEMO", limit: 200
-    t.datetime "SHOP_OPEN_DT"
-    t.datetime "SHOP_CLOSE_DT", null: false
-    t.string "ETAX_SHOP_NM", limit: 100
-    t.string "CRET_USRID", limit: 20
-    t.datetime "CRET_DT"
-    t.string "MOD_USRID", limit: 20
-    t.datetime "MOD_DT"
-  end
-
-  create_table "idx_shop(old version)", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 20, null: false
-    t.string "s_id", limit: 20
-    t.string "b_id", limit: 20
-    t.string "shop_id", limit: 20
-    t.string "shop_nm", limit: 20
-    t.string "shop_cc_id", limit: 20
-    t.boolean "shop_mst_yn"
-    t.string "shop_auto_trs_st", limit: 20
-    t.string "shop_onr_nm", limit: 20
-    t.string "shop_stt_trs_yn", limit: 20
-    t.string "shop_stt_trs_st", limit: 20
-    t.string "shop_stt_trs_svr", limit: 20
-    t.string "shop_stt_trs_svr_kd", limit: 20
-    t.integer "shop_biz_no"
-    t.string "shop_key_tel", limit: 20
-    t.string "shop_sub_tel", limit: 20
-    t.string "shop_fax_tel", limit: 20
-    t.string "shop_zip_id", limit: 20
-    t.string "shop_ads_info", limit: 200
-    t.string "shop_bcdt", limit: 20
-    t.string "shop_bctr", limit: 20
-    t.string "shop_bs_amt", limit: 20
-    t.string "shop_stt_amt", limit: 20
-    t.string "shop_bsn_st", limit: 20
-    t.string "shop_crc_st", limit: 20
-    t.string "shop_stc_st", limit: 20
-    t.string "shop_stc_msg_st", limit: 20
-    t.string "shop_uc_dp_st", limit: 20
-    t.string "shop_rct_pbs_st", limit: 20
-    t.integer "shop_cash_rct_st"
-    t.string "shop_dst_st", limit: 20
-    t.string "shop_tax_st", limit: 20
-    t.integer "shop_tax_per"
-    t.string "shop_tax_apl_st", limit: 20
-    t.integer "shop_tax_dec_ist"
-    t.string "shop_tax_dec_ist_st", limit: 2
-    t.string "shop_tax_dec_bs_st", limit: 20
-    t.string "shop_sct_odr_ccl_yn", limit: 20
-    t.string "shop_sct_gds_ccl_yn", limit: 20
-    t.string "shop_sct_dst_apl_yn", limit: 20
-    t.string "shop_sct_stt_apl_yn", limit: 20
-    t.string "shop_sct_odr_st", limit: 20
-    t.string "shop_sct_odr_st_bs", limit: 20
-    t.string "shop_sm_amt_st", limit: 20
-    t.integer "shop_sm_amt_st_ist"
-    t.string "shop_svc_yn", limit: 20
-    t.integer "shop_svc_per"
-    t.string "shop_svc_st", limit: 20
-    t.string "shop_svc_apl_st", limit: 20
-    t.string "shop_tb_mv_prt_st", limit: 20
-    t.string "shop_crv_yn", limit: 20
-    t.string "shop_stt_usrid_st", limit: 20
-    t.string "shop_vst_1st_nm", limit: 20
-    t.string "shop_vst_2nd_nm", limit: 20
-    t.string "shop_vst_jc_st", limit: 20
-    t.string "shop_vst_jc_bsn_st", limit: 20
-    t.string "shop_odr_end_no_prt_yn", limit: 20
-    t.string "shop_cash_mng_st", limit: 20
-    t.string "shop_tml_card_chk_st", limit: 20
-    t.boolean "cc_live_yn"
-    t.text "memo"
-    t.string "info", limit: 20
-    t.integer "sort_no"
-    t.boolean "live_yn"
-    t.integer "if_id"
+  create_table "idx_shop", primary_key: ["shop_id", "s_id", "h_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.string "h_nm", limit: 50
+    t.string "s_nm", limit: 50
+    t.string "shop_nm", limit: 50
+    t.string "shoppt_nm", limit: 50
+    t.string "if_id", limit: 20
+    t.string "shop_suw_id", limit: 10
+    t.string "shop_biz_no", limit: 15
+    t.string "shop_onr_nm", limit: 30
+    t.string "shop_key_tel", limit: 15
+    t.string "shop_ads_info", limit: 100
+    t.string "b_id", limit: 10
+    t.string "memo", limit: 200
+    t.datetime "shop_open_dt"
+    t.datetime "shop_close_dt"
+    t.string "etax_shop_nm", limit: 100
     t.string "cret_usrid", limit: 20
     t.datetime "cret_dt"
     t.string "mod_usrid", limit: 20
     t.datetime "mod_dt"
-    t.string "p_id", limit: 20
-    t.string "shop_st", limit: 20
-    t.integer "shop_suw_id"
-    t.string "shop_stbmr_st", limit: 20
-    t.string "shop_hq_yn", limit: 20
-    t.string "cc_stk_st", limit: 20
-    t.string "shop_soe_uc_kd_id", limit: 20
-    t.string "dn_goods_higher", limit: 20
-    t.string "dn_goods_major", limit: 20
-    t.string "dn_goods_minor", limit: 20
-    t.string "dn_goods_transform", limit: 20
-    t.string "dn_goods", limit: 20
-    t.string "dn_shop", limit: 20
-    t.string "dn_voucher", limit: 20
-    t.string "dn_discount", limit: 20
-    t.string "dn_discount_goods", limit: 20
-    t.string "dn_print_form", limit: 20
-    t.string "dn_customer_use_style", limit: 20
-    t.string "shoppt_id", limit: 20
-    t.boolean "mobile_rtv_yn"
-    t.string "etax_shop_nm", limit: 20
-    t.string "dn_suser_schedule", limit: 20
-    t.string "dn_suser_minor", limit: 20
-    t.string "dn_component", limit: 20
-    t.string "iff_no", limit: 20
-    t.string "ppce_oln_use_yn", limit: 20
-    t.datetime "shop_open_dt"
-    t.datetime "shop_close_dt"
-    t.string "tml_use_yn", limit: 20
-    t.string "dn_pos", limit: 20
   end
 
   create_table "idx_shopsort", primary_key: "shop_id", id: :string, limit: 20, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -400,14 +300,14 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.datetime "last_read_at"
   end
 
-  create_table "tb_cos_daily", primary_key: ["h_id", "s_id", "shop_id"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 20, null: false
-    t.string "s_id", limit: 20, null: false
-    t.string "shop_id", limit: 20, null: false
-    t.datetime "bsn_dt"
-    t.string "b_id", limit: 20
-    t.string "shop_nm", limit: 20
-    t.integer "shop_sort"
+  create_table "tb_cos_daily", primary_key: ["h_id", "s_id", "shop_id", "bsn_dt"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.datetime "bsn_dt", null: false
+    t.string "b_id", limit: 10
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
     t.decimal "sbg_real_amt", precision: 13, scale: 2
     t.decimal "sb_avg_amt", precision: 12, scale: 2
     t.decimal "sog_real_amt", precision: 38, scale: 2
@@ -417,105 +317,105 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
   create_table "tb_invt", primary_key: ["h_id", "s_id", "shop_id", "gd_id", "so_date"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "h_id", limit: 10, null: false
     t.string "s_id", limit: 10, null: false
+    t.string "b_id", limit: 10
     t.string "shop_id", limit: 10, null: false
-    t.string "gd_id", limit: 20, null: false
+    t.string "gd_id", limit: 10, null: false
     t.datetime "so_date", null: false
-    t.string "b_id", limit: 20
-    t.string "shop_nm", limit: 20
-    t.integer "shop_sort"
-    t.string "gd_nm", limit: 20
-    t.string "unit_id", limit: 20
-    t.decimal "min_qty", precision: 10, scale: 5
-    t.decimal "max_qty", precision: 10, scale: 5
-    t.decimal "bsn_qty", precision: 10, scale: 5
-    t.decimal "prs_qty", precision: 10, scale: 5
-    t.decimal "srate", precision: 10, scale: 5
-    t.decimal "real_qty", precision: 10, scale: 5
-    t.decimal "real_amt", precision: 10, scale: 5
-    t.decimal "so_qty", precision: 10, scale: 5
-    t.decimal "so_amt", precision: 10, scale: 5
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
+    t.string "gd_nm", limit: 100
+    t.string "unit_id", limit: 10
+    t.decimal "min_qty", precision: 10, scale: 2
+    t.decimal "max_qty", precision: 10, scale: 2
+    t.decimal "bsn_qty", precision: 38, scale: 2
+    t.decimal "prs_qty", precision: 38, scale: 2
+    t.decimal "srate", precision: 38, scale: 6
+    t.integer "real_qty"
+    t.decimal "real_amt", precision: 38, scale: 2
+    t.decimal "so_qty", precision: 38, scale: 2
+    t.decimal "so_amt", precision: 38, scale: 2
   end
 
-  create_table "tb_ppc_save", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 10
-    t.string "s_id", limit: 10
-    t.string "ppc_no", limit: 20
-    t.integer "ppce_no"
+  create_table "tb_ppc_save", primary_key: ["h_id", "s_id", "ppce_no", "ppc_no"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "ppc_no", limit: 50, null: false
+    t.integer "ppce_no", null: false
     t.string "b_id", limit: 20
     t.string "shop_id", limit: 20
-    t.string "shop_nm", limit: 20
-    t.integer "shop_sort"
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
     t.datetime "bsn_dt"
-    t.decimal "ppce_amt", precision: 10, scale: 2
+    t.decimal "ppce_amt", precision: 12, scale: 2
     t.datetime "ppce_dt"
-    t.string "bc_st", limit: 20
-    t.decimal "ppce_crg_cash_amt", precision: 10, scale: 2
-    t.decimal "ppce_crg_card_amt", precision: 10, scale: 2
-    t.decimal "ppce_crg_oln_amt", precision: 10, scale: 2
-    t.string "apv", limit: 20
+    t.string "bc_st", limit: 1
+    t.decimal "ppce_crg_cash_amt", precision: 12, scale: 2
+    t.decimal "ppce_crg_card_amt", precision: 12, scale: 2
+    t.decimal "ppce_crg_oln_amt", precision: 12, scale: 2
+    t.string "apv", limit: 1
     t.string "ppce_apv_nb", limit: 20
-    t.string "card_nm", limit: 20
-    t.decimal "ppce_add_amt", precision: 10, scale: 2
-    t.decimal "ppce_use_amt", precision: 10, scale: 2
-    t.decimal "ppce_avb_amt", precision: 10, scale: 2
-    t.string "live_yn", limit: 20
+    t.string "card_nm", limit: 50
+    t.decimal "ppce_add_amt", precision: 12, scale: 2
+    t.decimal "ppce_use_amt", precision: 12, scale: 2
+    t.decimal "ppce_avb_amt", precision: 12, scale: 2
+    t.string "live_yn", limit: 1
   end
 
-  create_table "tb_ppc_use", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 10
-    t.string "s_id", limit: 10
-    t.string "shop_id", limit: 10
-    t.datetime "bsn_dt"
-    t.integer "bsn_no"
-    t.integer "bc_no"
-    t.string "b_id", limit: 20
-    t.string "shop_nm", limit: 20
-    t.integer "shop_sort"
-    t.decimal "bc_amt", precision: 10, scale: 2
-    t.string "bc_card_nb", limit: 20
-    t.decimal "b_rcb_amt", precision: 10, scale: 2
-    t.decimal "b_crt_amt", precision: 10, scale: 2
-    t.decimal "b_cash_amt", precision: 10, scale: 2
-    t.string "b_cash_rct_yn", limit: 20
-    t.decimal "b_vcr_amt", precision: 10, scale: 2
-    t.decimal "b_tick_amt", precision: 10, scale: 2
-    t.decimal "b_pnt_amt", precision: 10, scale: 2
-    t.decimal "b_svc_crg_amt", precision: 10, scale: 2
-    t.integer "b_vst_cnt"
+  create_table "tb_ppc_use", primary_key: ["h_id", "s_id", "shop_id", "bsn_dt", "bsn_no", "bc_no"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.datetime "bsn_dt", null: false
+    t.integer "bsn_no", limit: 2, null: false
+    t.integer "bc_no", limit: 2, null: false
+    t.string "b_id", limit: 10
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
+    t.decimal "bc_amt", precision: 12, scale: 2
+    t.string "bc_card_nb", limit: 30
+    t.decimal "b_rcb_amt", precision: 12, scale: 2
+    t.decimal "b_crt_amt", precision: 12, scale: 2
+    t.decimal "b_cash_amt", precision: 12, scale: 2
+    t.string "b_cash_rct_yn", limit: 1
+    t.decimal "b_vcr_amt", precision: 12, scale: 2
+    t.decimal "b_tick_amt", precision: 12, scale: 2
+    t.decimal "b_pnt_amt", precision: 12, scale: 2
+    t.decimal "b_svc_crg_amt", precision: 12, scale: 2
+    t.integer "b_vst_cnt", limit: 2
     t.datetime "b_crg_dt"
   end
 
-  create_table "tb_sales_bill", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 10
-    t.string "s_id", limit: 10
-    t.string "shop_id", limit: 10
-    t.datetime "bsn_dt"
-    t.integer "bsn_no"
+  create_table "tb_sales_bill", primary_key: ["h_id", "s_id", "shop_id", "bsn_dt", "bsn_no"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.datetime "bsn_dt", null: false
+    t.integer "bsn_no", limit: 2, null: false
     t.string "b_id", limit: 10
-    t.string "shop_nm", limit: 100
-    t.integer "shop_sort"
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
     t.string "stb_id", limit: 10
     t.datetime "b_odr_dt"
     t.datetime "b_crg_dt"
-    t.string "b_odr_st", limit: 10
-    t.string "b_st", limit: 10
-    t.decimal "b_ccl_amt", precision: 8, scale: 2
-    t.decimal "b_dst_amt", precision: 8, scale: 2
-    t.decimal "b_rcb_amt", precision: 8, scale: 2
-    t.integer "b_vst_cnt"
-    t.string "live_yn", limit: 10
-    t.decimal "b_crt_amt", precision: 10, scale: 2
-    t.decimal "b_cash_amt", precision: 10, scale: 2
-    t.decimal "b_etc_amt", precision: 10, scale: 2
-    t.string "gd_nm"
+    t.string "b_odr_st", limit: 1
+    t.string "b_st", limit: 1
+    t.decimal "b_ccl_amt", precision: 12, scale: 2
+    t.decimal "b_dst_amt", precision: 13, scale: 2
+    t.decimal "b_rcb_amt", precision: 12, scale: 2
+    t.integer "b_vst_cnt", limit: 2
+    t.string "live_yn", limit: 1
+    t.decimal "b_crt_amt", precision: 12, scale: 2
+    t.decimal "b_cash_amt", precision: 12, scale: 2
+    t.decimal "b_etc_amt", precision: 15, scale: 2
+    t.string "gd_nm", limit: 1000
   end
 
-  create_table "tb_sales_current", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 10
-    t.string "s_id", limit: 10
-    t.string "shop_id", limit: 10
-    t.datetime "bsn_dt"
-    t.integer "bsn_no"
+  create_table "tb_sales_current", primary_key: ["h_id", "s_id", "shop_id", "bsn_dt", "bsn_no"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.datetime "bsn_dt", null: false
+    t.integer "bsn_no", null: false
     t.string "b_id", limit: 20
     t.string "shop_nm", limit: 20
     t.integer "shop_sort"
@@ -590,14 +490,14 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
   end
 
   create_table "tb_sales_daily", primary_key: ["h_id", "s_id", "shop_id", "bsn_dt"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 50, null: false
-    t.string "s_id", limit: 50, null: false
-    t.string "shop_id", limit: 50, null: false
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
     t.datetime "bsn_dt", null: false
-    t.string "b_id", limit: 50
+    t.string "b_id", limit: 10
     t.integer "ss_sort", limit: 2
     t.integer "shop_sort", limit: 2
-    t.string "shop_nm", limit: 100
+    t.string "shop_nm", limit: 50
     t.decimal "sb_amt", precision: 12, scale: 2
     t.decimal "sb_rtn_amt", precision: 12, scale: 2
     t.decimal "sb_ccl_amt", precision: 12, scale: 2
@@ -635,9 +535,9 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.datetime "cret_dt"
     t.datetime "sb_to_dt"
     t.string "sb_mod_yn", limit: 1
-    t.decimal "sb_fm_cash_amt", precision: 12, scale: 2
-    t.decimal "sb_to_cash_amt", precision: 12, scale: 2
-    t.text "memo"
+    t.decimal "sb_fm_cash_amt", precision: 10, scale: 2
+    t.decimal "sb_to_cash_amt", precision: 10, scale: 2
+    t.string "memo", limit: 2000
   end
 
   create_table "tb_sales_detail", primary_key: ["h_id", "s_id", "shop_id", "bsn_dt", "bsn_no", "bg_no"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -645,46 +545,47 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.string "s_id", limit: 10, null: false
     t.string "shop_id", limit: 10, null: false
     t.datetime "bsn_dt", null: false
-    t.integer "bsn_no", null: false
-    t.integer "bg_no", null: false
+    t.integer "bsn_no", limit: 2, null: false
+    t.integer "bg_no", limit: 2, null: false
     t.string "b_id", limit: 10
-    t.string "shop_nm", limit: 100
-    t.integer "shop_sort"
-    t.integer "b_vst_cnt"
-    t.string "gd_id", limit: 50
-    t.string "gd_nm", limit: 200
-    t.string "bg_st", limit: 20
-    t.string "bg_odr_st", limit: 20
-    t.string "bg_gd_st", limit: 20
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
+    t.integer "b_vst_cnt", limit: 2
+    t.string "gd_id", limit: 10
+    t.string "gd_nm", limit: 100
+    t.string "bg_st", limit: 1
+    t.string "bg_odr_st", limit: 1
+    t.string "bg_gd_st", limit: 10
     t.datetime "bg_odr_dt"
     t.datetime "bg_stt_dt"
-    t.decimal "bg_qty", precision: 10
-    t.decimal "bg_uc", precision: 10
-    t.decimal "bg_amt", precision: 10, scale: 2
-    t.decimal "bg_gd_dst_amt", precision: 10, scale: 2
-    t.decimal "bg_dst_amt", precision: 10, scale: 2
-    t.decimal "bg_real_amt", precision: 10, scale: 2
-    t.decimal "bg_svc_crg_amt", precision: 10, scale: 2
-    t.decimal "bg_vos_amt", precision: 10, scale: 2
-    t.decimal "bg_tax_amt", precision: 10, scale: 2
-    t.decimal "bg_apl_vos_amt", precision: 10, scale: 2
-    t.decimal "bg_apl_tax_amt", precision: 10, scale: 2
-    t.string "stb_id", limit: 20
-    t.integer "bg_ord_sort_no"
-    t.string "bg_ord_pos_id", limit: 20
-    t.string "bg_mod_pos_id", limit: 20
+    t.decimal "bg_qty", precision: 10, scale: 2
+    t.decimal "bg_uc", precision: 12, scale: 2
+    t.decimal "bg_amt", precision: 12, scale: 2
+    t.decimal "bg_gd_dst_amt", precision: 12, scale: 2
+    t.decimal "bg_dst_amt", precision: 12, scale: 2
+    t.decimal "bg_real_amt", precision: 12, scale: 2
+    t.decimal "bg_svc_crg_amt", precision: 12, scale: 2
+    t.decimal "bg_vos_amt", precision: 12, scale: 2
+    t.decimal "bg_tax_amt", precision: 12, scale: 2
+    t.decimal "bg_apl_vos_amt", precision: 12, scale: 2
+    t.decimal "bg_apl_tax_amt", precision: 12, scale: 2
+    t.string "stb_id", limit: 50
+    t.integer "bg_ord_sort_no", limit: 2
+    t.decimal "bg_ord_qty", precision: 10, scale: 2
+    t.string "bg_ord_pos_id", limit: 50
+    t.string "bg_mod_pos_id", limit: 50
     t.string "del_id", limit: 50
-    t.string "bg_ccl_id", limit: 50
-    t.string "dst_id", limit: 20
-    t.integer "bg_bf_bg_no"
-    t.string "bg_bf_stb_id", limit: 20
-    t.string "bg_bill_msg", limit: 50
-    t.string "bg_rtn_id", limit: 20
+    t.string "bg_ccl_id", limit: 10
+    t.string "dst_id", limit: 50
+    t.integer "bg_bf_bg_no", limit: 2
+    t.string "bg_bf_stb_id", limit: 10
+    t.string "bg_bill_msg", limit: 100
+    t.string "bg_rtn_id", limit: 10
     t.datetime "bg_rtn_bsn_dt"
-    t.integer "bg_rtn_bsn_no"
-    t.integer "bg_rtn_bg_no"
-    t.string "bg_new_gd_nm", limit: 200
-    t.string "live_yn", limit: 20
+    t.integer "bg_rtn_bsn_no", limit: 2
+    t.integer "bg_rtn_bg_no", limit: 2
+    t.string "bg_new_gd_nm", limit: 100
+    t.string "live_yn", limit: 1
     t.string "cret_usrid", limit: 20
     t.datetime "cret_dt"
     t.string "mod_usrid", limit: 20
@@ -874,45 +775,47 @@ ActiveRecord::Schema.define(version: 2020_12_16_042533) do
     t.integer "shwng_salessclar"
   end
 
-  create_table "tb_so_detail", id: false, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.string "h_id", limit: 10
-    t.string "s_id", limit: 10
-    t.string "shop_id", limit: 10
-    t.datetime "so_dt"
-    t.integer "so_no"
-    t.integer "sog_no"
-    t.string "b_id", limit: 20
-    t.string "shop_nm", limit: 20
-    t.integer "shop_sort"
-    t.string "gd_id", limit: 20
-    t.string "sog_jc_st", limit: 20
+  create_table "tb_so_detail", primary_key: ["h_id", "s_id", "shop_id", "so_dt", "so_no", "sog_no"], options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "h_id", limit: 10, null: false
+    t.string "s_id", limit: 10, null: false
+    t.string "shop_id", limit: 10, null: false
+    t.datetime "so_dt", null: false
+    t.integer "so_no", limit: 2, null: false
+    t.integer "sog_no", limit: 2, null: false
+    t.string "b_id", limit: 10
+    t.string "shop_nm", limit: 50
+    t.integer "shop_sort", limit: 2
+    t.string "gd_id", limit: 10
+    t.string "sog_jc_st", limit: 1
     t.string "unit_id", limit: 20
-    t.string "unit_nm", limit: 20
-    t.decimal "sog_qty", precision: 8, scale: 2
-    t.decimal "sog_uc", precision: 8, scale: 2
-    t.decimal "sog_amt", precision: 8, scale: 2
-    t.decimal "sog_real_amt", precision: 8, scale: 2
-    t.decimal "sog_vos_amt", precision: 8, scale: 2
-    t.decimal "sog_tax_amt", precision: 8, scale: 2
-    t.decimal "sog_taxf_amt", precision: 8, scale: 2
-    t.decimal "sog_ccl_amt", precision: 8, scale: 2
-    t.string "sog_tax_st", limit: 20
-    t.decimal "sog_odr_qty", precision: 8, scale: 2
-    t.decimal "sog_rcv_qty", precision: 8, scale: 2
-    t.decimal "sog_si_qty", precision: 8, scale: 2
-    t.string "trd_id", limit: 20
-    t.string "trd_nm", limit: 20
-    t.string "gd_nm", limit: 20
-    t.string "live_yn", limit: 20
-    t.text "memo"
+    t.string "unit_nm", limit: 100
+    t.decimal "sog_qty", precision: 10, scale: 2
+    t.decimal "sog_uc", precision: 12, scale: 2
+    t.decimal "sog_amt", precision: 12, scale: 2
+    t.decimal "sog_real_amt", precision: 12, scale: 2
+    t.decimal "sog_vos_amt", precision: 12, scale: 2
+    t.decimal "sog_tax_amt", precision: 12, scale: 2
+    t.decimal "sog_taxf_amt", precision: 12, scale: 2
+    t.decimal "sog_ccl_amt", precision: 12, scale: 2
+    t.string "sog_tax_st", limit: 1
+    t.decimal "sog_odr_qty", precision: 10, scale: 2
+    t.decimal "sog_rcv_qty", precision: 10, scale: 2
+    t.decimal "sog_si_qty", precision: 10, scale: 2
+    t.string "trd_id", limit: 10
+    t.string "trd_nm", limit: 50
+    t.string "gd_nm", limit: 100
+    t.string "live_yn", limit: 1
+    t.string "memo", limit: 200
+    t.string "info", limit: 200
+    t.integer "sort_no", limit: 2
     t.string "cret_usrid", limit: 20
     t.datetime "cret_dt"
     t.string "mod_usrid", limit: 20
     t.datetime "mod_dt"
-    t.string "gdmr_id", limit: 20
-    t.string "gdmj_id", limit: 20
-    t.string "gdmr_nm", limit: 20
-    t.string "gdmj_nm", limit: 20
+    t.string "gdmr_id", limit: 10
+    t.string "gdmj_id", limit: 50
+    t.string "gdmr_nm", limit: 50
+    t.string "gdmj_nm", limit: 50
   end
 
   add_foreign_key "attachfiles", "reportrooms", column: "reportid", name: "id"
