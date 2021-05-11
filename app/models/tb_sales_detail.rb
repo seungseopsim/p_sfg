@@ -1,14 +1,14 @@
 class TbSalesDetail < ApplicationRecord
 
 	COL = 'h_id, s_id, shop_id, bsn_dt, bsn_no, bg_no, b_id, shop_nm, shop_sort, b_vst_cnt, gd_id, gd_nm, bg_st, bg_odr_st, bg_gd_st, bg_odr_dt, bg_stt_dt, bg_qty, bg_uc, bg_amt, bg_gd_dst_amt, bg_dst_amt, bg_real_amt, bg_svc_crg_amt, bg_vos_amt, bg_tax_amt, bg_apl_vos_amt, bg_apl_tax_amt, stb_id, bg_ord_sort_no, bg_ord_qty, bg_ord_pos_id, bg_mod_pos_id, del_id, bg_ccl_id, dst_id, bg_bf_bg_no, bg_bf_stb_id, bg_bill_msg, bg_rtn_id, bg_rtn_bsn_dt, bg_rtn_bsn_no, bg_rtn_bg_no, bg_new_gd_nm, live_yn, cret_usrid, cret_dt, mod_usrid, mod_dt'.freeze
-	TABLE = "tb_sales_detail".freeze
+	TABLE = 'tb_sales_detail'.freeze
 	@@insertThread = nil
 	
 	def self.insert(_day)
 		result = "#{TABLE}-#{_day} : INSERT NO DATA"
 		
 		cubedatacnt = Cubedb::VShSalesDetail.select_count(_day)
-		if cubedata.present?
+		if cubedatacnt.present?
 			if deletedata(_day)
 				1.step(cubedatacnt, DATAOFFSET) do | index |
 					offset = index + DATAOFFSET
@@ -48,7 +48,8 @@ class TbSalesDetail < ApplicationRecord
 	end
 	
 
-private
+	private
+	
 	private_class_method def self.insertdata(_datas)
 		cnt = 0
 				

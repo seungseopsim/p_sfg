@@ -2,6 +2,7 @@ class Cubedb::VShSalesDetail < Cubedb::CubeDbBase
 	
 	# select all
 	def self.selectall(_day)
+		day = Date.yesterday
 		if _day.present?
 			day = _day
 		end
@@ -12,17 +13,24 @@ class Cubedb::VShSalesDetail < Cubedb::CubeDbBase
 	
 	# count
 	def self.select_count(_day)
+		day = Date.yesterday
 		if _day.present?
 			day = _day
 		end
 
 		query = "SELECT COUNT(h_id) AS CNT FROM v_sh_sales_detail WHERE BSN_DT = '%{day}'; " % [ day: day ]
 		result = execute_one(query)
-		return result['CNT']
+
+		if result.present?
+			return result['CNT']
+		else
+			return nil
+		end
 	end
 	
 	# select range
 	def self.select_range(_day, _start, _last)
+		day = Date.yesterday
 		if _day.present?
 			day = _day
 		end
