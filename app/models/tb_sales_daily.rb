@@ -1,106 +1,52 @@
 class TbSalesDaily < ApplicationRecord
 	SQLOPTION = " AND s_id != '#{@@CUBE_JJ_ID}' ".freeze
-	
-	COL = 'h_id, s_id, shop_id, bsn_dt, b_id, ss_sort, shop_sort, shop_nm, sb_amt, sb_rtn_amt, sb_ccl_amt, sb_gd_dst_amt, sb_dst_amt, sb_real_amt, sb_vst_cnt, sb_ord_cnt, sb_vos_amt, sb_tax_amt, sb_taxf_amt, sb_svc_crg_amt, sb_tb_trv_per, sb_rcb_amt, sb_cash_amt, sb_crt_amt, sb_vcr_amt, sb_tick_amt, sb_cs_pnt_amt, sb_oln_amt, sb_mlt_amt, sb_etc_amt, sb_vcr_in_amt, sb_tick_in_amt, sb_etc_in_amt, sb_cash_rct_cnt, sb_cash_rct_amt, sb_ccl_cnt, sb_rtn_cnt, sb_shop_cnt, sb_pkg_cnt, sb_dlr_cnt, sb_epse_amt, sb_trn_dt, cret_dt, sb_to_dt, sb_mod_yn, sb_fm_cash_amt, sb_to_cash_amt, memo'.freeze
-	
+	TABLE = 'tb_sales_daily'.freeze
 	@@insertThread = nil
-	
-	def self.insert(_datas)
-
-		if( @@insertThread != nil)
-			return 'Working'
-		end
-		
-		begin
-			@@insertThread = Thread.new do
-				Rails.application.executor.wrap do
-					insertdata = insertdata(_datas)
-					Rails.logger.info "TB_SALES_DAILY INSERT DATA CNT #{insertdata}"
-					@@insertThread = nil
-				end
-			end
-		rescue RuntimeError => runtimeerror
-			Rails.logger.error "TB_SALES_DAILY RuntimeError #{runtimeerror}"
-			@@insertThread.exit
-			@@insertThread = nil
-		end
-
-		return 'Insert Start'
-
-	end
-	
-	private
-	def self.insertdata(_datas)
-		cnt = 0
-		
-		if _datas.blank?
-			Rails.logger.info "SALES_DAILY CUBE DATA CNT #{cnt}"
-			return cnt
-		end	
-		
-		cnt = 0
-		_datas.each do |data|
-		begin
-			bsn_dt = data['BSN_DT'].blank? ? 'NULL' : "'#{data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-			ss_sort = data['SS_SORT'].blank? ? 'NULL' : data['SS_SORT']
-			shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-			sb_amt = data['SB_AMT'].blank? ? 'NULL' : data['SB_AMT']
-			sb_rtn_amt = data['SB_RTN_AMT'].blank? ? 'NULL' : data['SB_RTN_AMT']
-			sb_ccl_amt = data['SB_CCL_AMT'].blank? ? 'NULL' : data['SB_CCL_AMT']
-			sb_gd_dst_amt = data['SB_GD_DST_AMT'].blank? ? 'NULL' : data['SB_GD_DST_AMT']
-			sb_dst_amt = data['SB_DST_AMT'].blank? ? 'NULL' : data['SB_DST_AMT']
-			sb_real_amt = data['SB_REAL_AMT'].blank? ? 'NULL' : data['SB_REAL_AMT']
-			sb_vst_cnt = data['SB_VST_CNT'].blank? ? 'NULL' : data['SB_VST_CNT']
-			sb_ord_cnt = data['SB_ORD_CNT'].blank? ? 'NULL' : data['SB_ORD_CNT']
-			sb_vos_amt = data['SB_VOS_AMT'].blank? ? 'NULL' : data['SB_VOS_AMT']
-			sb_tax_amt = data['SB_TAX_AMT'].blank? ? 'NULL' : data['SB_TAX_AMT']
-			sb_taxf_amt = data['SB_TAXF_AMT'].blank? ? 'NULL' : data['SB_TAXF_AMT']
-			sb_svc_crg_amt = data['SB_SVC_CRG_AMT'].blank? ? 'NULL' : data['SB_SVC_CRG_AMT']
-			sb_tb_trv_per = data['SB_TB_TRV_PER'].blank? ? 'NULL' : data['SB_TB_TRV_PER']
-			sb_rcb_amt = data['SB_RCB_AMT'].blank? ? 'NULL' : data['SB_RCB_AMT']
-			sb_cash_amt = data['SB_CASH_AMT'].blank? ? 'NULL' : data['SB_CASH_AMT']
-			sb_crt_amt = data['SB_CRT_AMT'].blank? ? 'NULL' : data['SB_CRT_AMT']
-			sb_vcr_amt = data['SB_VCR_AMT'].blank? ? 'NULL' : data['SB_VCR_AMT']
-			sb_tick_amt = data['SB_TICK_AMT'].blank? ? 'NULL' : data['SB_TICK_AMT']
-			sb_cs_pnt_amt = data['SB_CS_PNT_AMT'].blank? ? 'NULL' : data['SB_CS_PNT_AMT']
-			sb_oln_amt = data['SB_OLN_AMT'].blank? ? 'NULL' : data['SB_OLN_AMT']
-			sb_mlt_amt = data['SB_MLT_AMT'].blank? ? 'NULL' : data['SB_MLT_AMT']
-			sb_etc_amt = data['SB_ETC_AMT'].blank? ? 'NULL' : data['SB_ETC_AMT']
-			sb_vcr_in_amt = data['SB_VCR_IN_AMT'].blank? ? 'NULL' : data['SB_VCR_IN_AMT']
-			sb_tick_in_amt = data['SB_TICK_IN_AMT'].blank? ? 'NULL' : data['SB_TICK_IN_AMT']
-			sb_etc_in_amt = data['SB_ETC_IN_AMT'].blank? ? 'NULL' : data['SB_ETC_IN_AMT']
-			sb_cash_rct_cnt = data['SB_CASH_RCT_CNT'].blank? ? 'NULL' : data['SB_CASH_RCT_CNT']
-			sb_cash_rct_amt = data['SB_CASH_RCT_AMT'].blank? ? 'NULL' : data['SB_CASH_RCT_AMT']
-			sb_ccl_cnt = data['SB_CCL_CNT'].blank? ? 'NULL' : data['SB_CCL_CNT']
-			sb_rtn_cnt = data['SB_RTN_CNT'].blank? ? 'NULL' : data['SB_RTN_CNT']
-			sb_shop_cnt = data['SB_SHOP_CNT'].blank? ? 'NULL' : data['SB_SHOP_CNT']
-			sb_pkg_cnt = data['SB_PKG_CNT'].blank? ? 'NULL' : data['SB_PKG_CNT']
-			sb_dlr_cnt = data['SB_DLR_CNT'].blank? ? 'NULL' : data['SB_DLR_CNT']
-			sb_epse_amt = data['SB_EPSE_AMT'].blank? ? 'NULL' : data['SB_EPSE_AMT']
-			sb_trn_dt = data['SB_TRN_DT'].blank? ? 'NULL' : "'#{data['SB_TRN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-			cret_dt = data['CRET_DT'].blank? ? 'NULL' : "'#{data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")}'" 
-			sb_to_dt = data['SB_TO_DT'].blank? ? 'NULL' : "'#{data['SB_TO_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-			sb_fm_cash_amt = data['SB_FM_CASH_AMT'].blank? ? 'NULL' : data['SB_FM_CASH_AMT']
-			sb_to_cash_amt = data['SB_TO_CASH_AMT'].blank? ? 'NULL' : data['SB_TO_CASH_AMT']	
+	COL = 'h_id, s_id, shop_id, bsn_dt, b_id, ss_sort, shop_sort, shop_nm, sb_amt, sb_rtn_amt, sb_ccl_amt, sb_gd_dst_amt, sb_dst_amt, sb_real_amt, sb_vst_cnt, sb_ord_cnt, sb_vos_amt, sb_tax_amt, sb_taxf_amt, sb_svc_crg_amt, sb_tb_trv_per, sb_rcb_amt, sb_cash_amt, sb_crt_amt, sb_vcr_amt, sb_tick_amt, sb_cs_pnt_amt, sb_oln_amt, sb_mlt_amt, sb_etc_amt, sb_vcr_in_amt, sb_tick_in_amt, sb_etc_in_amt, sb_cash_rct_cnt, sb_cash_rct_amt, sb_ccl_cnt, sb_rtn_cnt, sb_shop_cnt, sb_pkg_cnt, sb_dlr_cnt, sb_epse_amt, sb_trn_dt, cret_dt, sb_to_dt, sb_mod_yn, sb_fm_cash_amt, sb_to_cash_amt, memo'.freeze
 			
-			value = " '%{h_id}', '%{s_id}', '%{shop_id}', %{bsn_dt}, '%{b_id}', %{ss_sort}, %{shop_sort}, '%{shop_nm}', %{sb_amt}, %{sb_rtn_amt}, %{sb_ccl_amt}, %{sb_gd_dst_amt}, %{sb_dst_amt}, %{sb_real_amt}, %{sb_vst_cnt}, %{sb_ord_cnt}, %{sb_vos_amt}, %{sb_tax_amt}, %{sb_taxf_amt}, %{sb_svc_crg_amt}, %{sb_tb_trv_per}, %{sb_rcb_amt}, %{sb_cash_amt}, %{sb_crt_amt}, %{sb_vcr_amt}, %{sb_tick_amt}, %{sb_cs_pnt_amt}, %{sb_oln_amt}, %{sb_mlt_amt}, %{sb_etc_amt}, %{sb_vcr_in_amt}, %{sb_tick_in_amt}, %{sb_etc_in_amt}, %{sb_cash_rct_cnt}, %{sb_cash_rct_amt}, %{sb_ccl_cnt}, %{sb_rtn_cnt}, %{sb_shop_cnt}, '%{sb_pkg_cnt}', %{sb_dlr_cnt}, %{sb_epse_amt}, %{sb_trn_dt}, %{cret_dt}, %{sb_to_dt}, '%{sb_mod_yn}', %{sb_fm_cash_amt}, %{sb_to_cash_amt}, '%{memo}'" % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], bsn_dt: bsn_dt, b_id: data['B_ID'], ss_sort: ss_sort, shop_sort: shop_sort, shop_nm: data['SHOP_NM'], sb_amt: sb_amt, sb_rtn_amt: sb_rtn_amt, sb_ccl_amt: sb_ccl_amt, sb_gd_dst_amt: sb_gd_dst_amt, sb_dst_amt: sb_dst_amt, sb_real_amt: sb_real_amt, sb_vst_cnt: sb_vst_cnt, sb_ord_cnt: sb_ord_cnt, sb_vos_amt: sb_vos_amt, sb_tax_amt: sb_tax_amt, sb_taxf_amt: sb_taxf_amt, sb_svc_crg_amt: sb_svc_crg_amt, sb_tb_trv_per: sb_tb_trv_per, sb_rcb_amt: sb_rcb_amt, sb_cash_amt: sb_cash_amt, sb_crt_amt: sb_crt_amt, sb_vcr_amt: sb_vcr_amt, sb_tick_amt: sb_tick_amt, sb_cs_pnt_amt: sb_cs_pnt_amt, sb_oln_amt: sb_oln_amt, sb_mlt_amt: sb_mlt_amt, sb_etc_amt: sb_etc_amt, sb_vcr_in_amt: sb_vcr_in_amt, sb_tick_in_amt: sb_tick_in_amt, sb_etc_in_amt: sb_etc_in_amt, sb_cash_rct_cnt: sb_cash_rct_cnt, sb_cash_rct_amt: sb_cash_rct_amt, sb_ccl_cnt: sb_ccl_cnt, sb_rtn_cnt: sb_rtn_cnt, sb_shop_cnt: sb_shop_cnt, sb_pkg_cnt: sb_pkg_cnt, sb_dlr_cnt: sb_dlr_cnt, sb_epse_amt: sb_epse_amt, sb_trn_dt: sb_trn_dt, cret_dt: cret_dt, sb_to_dt: sb_to_dt, sb_mod_yn: data['SB_MOD_YN'], sb_fm_cash_amt: sb_fm_cash_amt, sb_to_cash_amt: sb_to_cash_amt, memo: data['MEMO'] ]
-					
-			query = "INSERT INTO tb_sales_daily (%{col}) VALUES( %{val} ); " % [col: COL, val: value ]
-			result = connection.execute(query)
-		rescue ActiveRecord::RecordNotUnique
-			next
-		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "TB_SALES_DAILY Insert Error #{exception}"
-			next
+	def self.insert(_day)
+		result = "#{TABLE}-#{_day} : INSERT NO DATA"
+		
+		cubedata = Cubedb::VShSalesDaily.selectall(_day)
+		if cubedata.present?	
+			if deletedata(_day)
+				data = insertdata(cubedata)
+				result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
+			else
+				result = "#{TABLE}-#{_day} : INSERT ERROR"
+			end
 		end
-			cnt += 1
-		end	
-	
-		Rails.logger.info "SALES_DAILY CUBE DATA CNT #{_datas.length} : Insert #{cnt}"
-		return cnt
+		
+		Rails.logger.info result
+		return result
 	end
 	
-	
+	def self.insert_withThread(_day)
+		result = "#{TABLE} INSERTING...."
+		
+		if @@insertThread == nil
+			result = "#{TABLE} INSERT START...."
+			begin
+				@@insertThread = Thread.new do
+					Rails.application.executor.wrap do
+						insert(_day)
+						@@insertThread = nil
+					end
+				end
+			rescue RuntimeError => runtimeerror
+				Rails.logger.error "#{TABLE} RuntimeError #{runtimeerror}"
+				@@insertThread.exit
+				@@insertThread = nil
+			end
+
+			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
+			#	@@insertThread.join
+			#end
+		end
+		
+		return result
+	end
+		
 	#일별 매출
 	def self.sfg_sum(_day)
 		query = "SELECT SUM(sb_real_amt) AS total FROM tb_sales_daily WHERE DATEDIFF(bsn_dt, '%{day}') = 0 %{option}; " % [day: _day, option: SQLOPTION]
@@ -452,7 +398,6 @@ queryresult = connection.select_all(query)
 	
 	def self.latelysales
 
-		
 		query = "SELECT BSN_DT as date, SUBSTR( _UTF8'일월화수목금토', DAYOFWEEK( bsn_dt ), 1 ) AS wk, sum(SB_REAL_AMT) As sales
 from tb_sales_daily 
 where shop_nm not like '%자작%'
@@ -463,8 +408,8 @@ limit 0,10 ;"
 		return connection.select_all(query)
 	end
 	
-	private
-		
+private
+	
 	def self.calper(_result)
 		result = _result
 		
@@ -571,5 +516,113 @@ limit 0,10 ;"
 		return result.lazy.sort_by{ |key, value| value[:s_id] }
 	end
 	
+	def self.insertdata(_datas)
+		cnt = 0
+				
+		if _datas.blank?
+			Rails.logger.info "#{TABLE} CUBE DATA CNT #{cnt}"
+			return cnt
+		end	
+		
+		cnt = _datas.length
+	
+		value = getinsertvaluestring(_datas[0])
+		query = "INSERT INTO %{table} (%{col}) VALUES (%{val})" % [table: TABLE, col: COL, val: value]
+		
+		for index in 1...cnt
+			value = getinsertvaluestring(_datas[index])
+			query += ", (%{val})" % [val: value]
+		end
+		
+		query += ';'
+
+		transaction do
+			connection.exec_query(query)
+#		rescue ActiveRecord::RecordNotUnique 
+#			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
+		rescue ActiveRecord::ActiveRecordError => exception
+			Rails.logger.error "#{TABLE} Insert Error #{exception}"
+			cnt = 0
+			raise ActiveRecord::Rollback
+		ensure
+			query = nil
+		end
+
+		return cnt
+	end
+	
+	# 삭제
+	def self.deletedata(_day)
+		result = true
+		if _day.blank?
+			return false
+		end	
+		
+		transaction do
+			query = "DELETE FROM %{table} WHERE bsn_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
+			cnt = connection.exec_delete(query)
+			Rails.logger.info "#{TABLE} deletedata #{cnt}"
+		rescue ActiveRecord::ActiveRecordError => exception
+			Rails.logger.error "#{TABLE} deletedata Error #{exception}"
+			result = false
+			raise ActiveRecord::Rollback
+		end
+
+		return result
+	end
+	
+	# insert value string
+	def self.getinsertvaluestring(_data)
+		data = _data
+		if data.blank?
+			return nil
+		end
+		
+		bsn_dt = data['BSN_DT'].blank? ? 'NULL' : "'#{data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
+		ss_sort = data['SS_SORT'].blank? ? 'NULL' : data['SS_SORT']
+		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
+		sb_amt = data['SB_AMT'].blank? ? 'NULL' : data['SB_AMT']
+		sb_rtn_amt = data['SB_RTN_AMT'].blank? ? 'NULL' : data['SB_RTN_AMT']
+		sb_ccl_amt = data['SB_CCL_AMT'].blank? ? 'NULL' : data['SB_CCL_AMT']
+		sb_gd_dst_amt = data['SB_GD_DST_AMT'].blank? ? 'NULL' : data['SB_GD_DST_AMT']
+		sb_dst_amt = data['SB_DST_AMT'].blank? ? 'NULL' : data['SB_DST_AMT']
+		sb_real_amt = data['SB_REAL_AMT'].blank? ? 'NULL' : data['SB_REAL_AMT']
+		sb_vst_cnt = data['SB_VST_CNT'].blank? ? 'NULL' : data['SB_VST_CNT']
+		sb_ord_cnt = data['SB_ORD_CNT'].blank? ? 'NULL' : data['SB_ORD_CNT']
+		sb_vos_amt = data['SB_VOS_AMT'].blank? ? 'NULL' : data['SB_VOS_AMT']
+		sb_tax_amt = data['SB_TAX_AMT'].blank? ? 'NULL' : data['SB_TAX_AMT']
+		sb_taxf_amt = data['SB_TAXF_AMT'].blank? ? 'NULL' : data['SB_TAXF_AMT']
+		sb_svc_crg_amt = data['SB_SVC_CRG_AMT'].blank? ? 'NULL' : data['SB_SVC_CRG_AMT']
+		sb_tb_trv_per = data['SB_TB_TRV_PER'].blank? ? 'NULL' : data['SB_TB_TRV_PER']
+		sb_rcb_amt = data['SB_RCB_AMT'].blank? ? 'NULL' : data['SB_RCB_AMT']
+		sb_cash_amt = data['SB_CASH_AMT'].blank? ? 'NULL' : data['SB_CASH_AMT']
+		sb_crt_amt = data['SB_CRT_AMT'].blank? ? 'NULL' : data['SB_CRT_AMT']
+		sb_vcr_amt = data['SB_VCR_AMT'].blank? ? 'NULL' : data['SB_VCR_AMT']
+		sb_tick_amt = data['SB_TICK_AMT'].blank? ? 'NULL' : data['SB_TICK_AMT']
+		sb_cs_pnt_amt = data['SB_CS_PNT_AMT'].blank? ? 'NULL' : data['SB_CS_PNT_AMT']
+		sb_oln_amt = data['SB_OLN_AMT'].blank? ? 'NULL' : data['SB_OLN_AMT']
+		sb_mlt_amt = data['SB_MLT_AMT'].blank? ? 'NULL' : data['SB_MLT_AMT']
+		sb_etc_amt = data['SB_ETC_AMT'].blank? ? 'NULL' : data['SB_ETC_AMT']
+		sb_vcr_in_amt = data['SB_VCR_IN_AMT'].blank? ? 'NULL' : data['SB_VCR_IN_AMT']
+		sb_tick_in_amt = data['SB_TICK_IN_AMT'].blank? ? 'NULL' : data['SB_TICK_IN_AMT']
+		sb_etc_in_amt = data['SB_ETC_IN_AMT'].blank? ? 'NULL' : data['SB_ETC_IN_AMT']
+		sb_cash_rct_cnt = data['SB_CASH_RCT_CNT'].blank? ? 'NULL' : data['SB_CASH_RCT_CNT']
+		sb_cash_rct_amt = data['SB_CASH_RCT_AMT'].blank? ? 'NULL' : data['SB_CASH_RCT_AMT']
+		sb_ccl_cnt = data['SB_CCL_CNT'].blank? ? 'NULL' : data['SB_CCL_CNT']
+		sb_rtn_cnt = data['SB_RTN_CNT'].blank? ? 'NULL' : data['SB_RTN_CNT']
+		sb_shop_cnt = data['SB_SHOP_CNT'].blank? ? 'NULL' : data['SB_SHOP_CNT']
+		sb_pkg_cnt = data['SB_PKG_CNT'].blank? ? 'NULL' : data['SB_PKG_CNT']
+		sb_dlr_cnt = data['SB_DLR_CNT'].blank? ? 'NULL' : data['SB_DLR_CNT']
+		sb_epse_amt = data['SB_EPSE_AMT'].blank? ? 'NULL' : data['SB_EPSE_AMT']
+		sb_trn_dt = data['SB_TRN_DT'].blank? ? 'NULL' : "'#{data['SB_TRN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
+		cret_dt = data['CRET_DT'].blank? ? 'NULL' : "'#{data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")}'" 
+		sb_to_dt = data['SB_TO_DT'].blank? ? 'NULL' : "'#{data['SB_TO_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
+		sb_fm_cash_amt = data['SB_FM_CASH_AMT'].blank? ? 'NULL' : data['SB_FM_CASH_AMT']
+		sb_to_cash_amt = data['SB_TO_CASH_AMT'].blank? ? 'NULL' : data['SB_TO_CASH_AMT']	
+
+		value = " '%{h_id}', '%{s_id}', '%{shop_id}', %{bsn_dt}, '%{b_id}', %{ss_sort}, %{shop_sort}, \"%{shop_nm}\", %{sb_amt}, %{sb_rtn_amt}, %{sb_ccl_amt}, %{sb_gd_dst_amt}, %{sb_dst_amt}, %{sb_real_amt}, %{sb_vst_cnt}, %{sb_ord_cnt}, %{sb_vos_amt}, %{sb_tax_amt}, %{sb_taxf_amt}, %{sb_svc_crg_amt}, %{sb_tb_trv_per}, %{sb_rcb_amt}, %{sb_cash_amt}, %{sb_crt_amt}, %{sb_vcr_amt}, %{sb_tick_amt}, %{sb_cs_pnt_amt}, %{sb_oln_amt}, %{sb_mlt_amt}, %{sb_etc_amt}, %{sb_vcr_in_amt}, %{sb_tick_in_amt}, %{sb_etc_in_amt}, %{sb_cash_rct_cnt}, %{sb_cash_rct_amt}, %{sb_ccl_cnt}, %{sb_rtn_cnt}, %{sb_shop_cnt}, '%{sb_pkg_cnt}', %{sb_dlr_cnt}, %{sb_epse_amt}, %{sb_trn_dt}, %{cret_dt}, %{sb_to_dt}, '%{sb_mod_yn}', %{sb_fm_cash_amt}, %{sb_to_cash_amt}, \"%{memo}\" " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], bsn_dt: bsn_dt, b_id: data['B_ID'], ss_sort: ss_sort, shop_sort: shop_sort, shop_nm: data['SHOP_NM'], sb_amt: sb_amt, sb_rtn_amt: sb_rtn_amt, sb_ccl_amt: sb_ccl_amt, sb_gd_dst_amt: sb_gd_dst_amt, sb_dst_amt: sb_dst_amt, sb_real_amt: sb_real_amt, sb_vst_cnt: sb_vst_cnt, sb_ord_cnt: sb_ord_cnt, sb_vos_amt: sb_vos_amt, sb_tax_amt: sb_tax_amt, sb_taxf_amt: sb_taxf_amt, sb_svc_crg_amt: sb_svc_crg_amt, sb_tb_trv_per: sb_tb_trv_per, sb_rcb_amt: sb_rcb_amt, sb_cash_amt: sb_cash_amt, sb_crt_amt: sb_crt_amt, sb_vcr_amt: sb_vcr_amt, sb_tick_amt: sb_tick_amt, sb_cs_pnt_amt: sb_cs_pnt_amt, sb_oln_amt: sb_oln_amt, sb_mlt_amt: sb_mlt_amt, sb_etc_amt: sb_etc_amt, sb_vcr_in_amt: sb_vcr_in_amt, sb_tick_in_amt: sb_tick_in_amt, sb_etc_in_amt: sb_etc_in_amt, sb_cash_rct_cnt: sb_cash_rct_cnt, sb_cash_rct_amt: sb_cash_rct_amt, sb_ccl_cnt: sb_ccl_cnt, sb_rtn_cnt: sb_rtn_cnt, sb_shop_cnt: sb_shop_cnt, sb_pkg_cnt: sb_pkg_cnt, sb_dlr_cnt: sb_dlr_cnt, sb_epse_amt: sb_epse_amt, sb_trn_dt: sb_trn_dt, cret_dt: cret_dt, sb_to_dt: sb_to_dt, sb_mod_yn: data['SB_MOD_YN'], sb_fm_cash_amt: sb_fm_cash_amt, sb_to_cash_amt: sb_to_cash_amt, memo: data['MEMO'] ]
+
+		return "%{val}" % [val: value]
+	end
 	
 end

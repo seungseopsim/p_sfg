@@ -2,7 +2,6 @@ class Cubedb::VShPpcSave < Cubedb::CubeDbBase
 	
 	
 	def self.selectall(_day)
-		day = Date.yesterday
 		if _day.present?
 			day = _day
 		end

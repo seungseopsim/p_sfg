@@ -119,14 +119,13 @@ class Reportroom < ApplicationRecord
 	#보고서 삭제
 	def self.deleteReport(_id)
 		result = true
-		begin
-			transaction do
-				connection.delete("DELETE FROM reportrooms WHERE id = '#{_id}'; " )
-			end
+	
+		transaction do
+			connection.delete("DELETE FROM reportrooms WHERE id = '#{_id}'; " )
 		rescue ActiveRecord::RecordInvalid => exception
 			Rails.looger.error "Reportroom deleteReport Error #{exception}"
 			result = false
-			Rollback			
+			raise ActiveRecord::Rollback			
 		end
 		return result
 	end

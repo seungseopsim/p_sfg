@@ -4,39 +4,14 @@ class IdxShop < ApplicationRecord
 	COL = "h_id, s_id, shop_id, h_nm, s_nm, shop_nm, shoppt_nm, if_id, shop_suw_id, shop_biz_no, shop_onr_nm, shop_key_tel, shop_ads_info, b_id, memo, shop_open_dt, shop_close_dt, etax_shop_nm, cret_usrid, cret_dt, mod_usrid, mod_dt".freeze
 	
 	@@insertThread = nil
-=begin
-	def self.insert(_datas)
 
-		if( @@insertThread != nil)
-			return 'Working'
-		end
-		
-		begin
-			@@insertThread = Thread.new do
-				Rails.application.executor.wrap do
-					insertdata = insertdata(_datas)
-					logger.info "IDX_SHOP INSERT DATA CNT #{insertdata}"
-					@@insertThread = nil
-				end
-			end
-		rescue RuntimeError => runtimeerror
-			logger.error "IDX_SHOP RuntimeError #{runtimeerror}"
-			@@insertThread.exit
-			@@insertThread = nil
-		end
-
-		#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-		#	@@insertThread.join
-		#end
-				
-		return 'Insert Start'
-
+	def self.insert
+		cubedata = Cubedb::VShIdxShop.selectall
+		data = insertdata(cubedata)
+		return "IDX_SHOP CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
 	end
-		
-	private
-	def self.insertdata(_datas)
-=end
-	def self.insert(_datas)
+	
+	private_class_method def self.insertdata(_datas)
 		insertCnt = 0
 		updateCnt = 0
 		bInsert = false

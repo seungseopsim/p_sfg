@@ -21,6 +21,7 @@ class Cubedb::CubeDbBase
 		rescue TinyTds::Error => exception
 			Rails.logger.error "Cubedb::CubeDbBase Error #{exception}"
 		ensure
+			queryresult = nil
 			if !client.nil?
 				client.close
 				client = nil
@@ -42,8 +43,9 @@ class Cubedb::CubeDbBase
 			
 			puts "query #{query}"
 			queryresult = client.execute(query)
+				
+			result = Array.new()
 			
-			result = Array.new
 			queryresult.each do |row|
 				result.push(row)
 			end
@@ -52,6 +54,7 @@ class Cubedb::CubeDbBase
 		rescue TinyTds::Error => exception
 			Rails.logger.error "Cubedb::CubeDbBase Error #{exception}"
 		ensure
+			queryresult = nil
 			if !client.nil?
 				client.close
 				client = nil

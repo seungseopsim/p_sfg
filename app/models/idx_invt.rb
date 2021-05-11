@@ -3,41 +3,13 @@ class IdxInvt < ApplicationRecord
 	TABLE = 'idx_invt'.freeze
 	COL = "h_id, s_id, shop_id, gd_id, gd_nm, unit_id, gdmr_id, live_yn, gd_bsn_unit_per, gd_bsn_unit_id, gd_stk_gd_per, memo, cret_usrid, cret_dt, mod_usrid, mod_dt".freeze
 	
-	@@insertThread = nil
-=begin
-	def self.insert(_datas)
-
-		if( @@insertThread != nil)
-			return 'Working'
-		end
-		
-		begin
-			@@insertThread = Thread.new do
-				Rails.application.executor.wrap do
-					insertdata = insertdata(_datas)
-					logger.info "IDX_INVT INSERT DATA CNT #{insertdata}"
-					@@insertThread = nil
-				end
-			end
-		rescue RuntimeError => runtimeerror
-			logger.error "IDX_INVT RuntimeError #{runtimeerror}"
-			@@insertThread.exit
-			@@insertThread = nil
-		end
-
-		#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-		#	@@insertThread.join
-		#end
-				
-		return 'Insert Start'
-
+	def self.insert
+		cubedata = Cubedb::VShIdxInvt.selectall
+		data = insertdata(cubedata)
+		return "IDX_INVT CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
 	end
-	
-		
-	private
+
 	def self.insertdata(_datas)
-=end
-	def self.insert(_datas)
 		insertCnt = 0
 		updateCnt = 0
 		bInsert = false
@@ -82,7 +54,7 @@ class IdxInvt < ApplicationRecord
 			end
 		end	
 
-		return "#Insert:#{insertCnt} / Update:#{updateCnt}"
+		return "Insert:#{insertCnt} / Update:#{updateCnt}"
 	end
 
 	

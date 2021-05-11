@@ -2,7 +2,9 @@ class ApplicationRecord < ActiveRecord::Base
   self.abstract_class = true
 	cattr_accessor :CUBE_JJ_ID, :SH_JJ_ID, instance_writer: false
 	@@CUBE_JJ_ID = 'JJ01'.freeze	#큐브 에서 관리하는 자작 ID
-	@@SH_JJ_ID = 'SH006'.freeze			#신화 에서 관리하는 자작 ID
+	@@SH_JJ_ID = 'SH006'.freeze		#신화 에서 관리하는 자작 ID
+	DATAOFFSET = 5000    			# 데이터 분할 갯수
+	
 	
 	# 쓰기 가능한 테이블 조합
 	def self.getwritepages(_type, _user)

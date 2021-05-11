@@ -118,4 +118,7 @@ Rails.application.configure do
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 	
+  #set SECRET_KEY_BASE
+  config.secret_key_base = ENV["SECRET_KEY_BASE"]
+  
 end
