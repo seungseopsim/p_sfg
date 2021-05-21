@@ -1,59 +1,65 @@
 class TbSoDetail < ApplicationRecord
 
 	COL = 'h_id, s_id, shop_id, so_dt, so_no, sog_no, b_id, shop_nm, shop_sort, gd_id, sog_jc_st, unit_id, unit_nm, sog_qty, sog_uc, sog_amt, sog_real_amt, sog_vos_amt, sog_tax_amt, sog_taxf_amt, sog_ccl_amt, sog_tax_st, sog_odr_qty, sog_rcv_qty, sog_si_qty, trd_id, trd_nm, gd_nm, live_yn, memo, info, sort_no, cret_usrid, cret_dt, mod_usrid, mod_dt, gdmr_id, gdmj_id, gdmr_nm, gdmj_nm'.freeze
-	TABLE = "tb_so_detail".freeze
-	@@insertThread = nil
+    TABLE = "tb_so_detail".freeze
+    
+    @@insertThread = nil
+    #@@semaphore = Mutex.new
 	
 	def self.insert(_day)
 		result = "#{TABLE}-#{_day} : INSERT NO DATA"
 		
-		cubedata = Cubedb::VShSoDetail.selectall(_day)
-		if cubedata.present?
-			if deletedata(_day)
-				data = insertdata(cubedata)
-				result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
-			else
-				result = "#{TABLE}-#{_day} : INSERT ERROR"
-			end
-		end
-		
-		Rails.logger.info result
+        cubedata = Cubedb::VShSoDetail.selectall(_day)
+        begin
+            if cubedata.present?
+                if deletedata(_day)
+                    data = insertdata(_day, cubedata)
+                    result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
+                else
+                    result = "#{TABLE}-#{_day} : INSERT ERROR"
+                end
+            end
+        rescue => exception
+            Rails.logger.error "#{TABLE}-#{_day} : INSERT ERROR: #{exception}"
+        end
+
 		return result
 	end
 	
 	def self.insert_withThread(_day)
-		result = "#{TABLE} INSERTING...."
+		result = "#{TABLE}-#{_day} INSERTING...."
 		
 		if @@insertThread == nil
-			result = "#{TABLE} INSERT START...."
 			begin
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
-						insert(_day)
-						@@insertThread = nil
+                        result = insert(_day)
+                        Rails.logger.info result
+                        @@insertThread = nil
 					end
-				end
-			rescue RuntimeError => runtimeerror
-				Rails.logger.error "#{TABLE} RuntimeError #{runtimeerror}"
-				@@insertThread.exit
-				@@insertThread = nil
-			end
-
-			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
-			#	@@insertThread.join
-			#end
-		end
-		
+                end
+                result = "#{TABLE}-#{_day} INSERT START....#{@@insertThread.status}"
+            rescue => runtimeerror
+                result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+                Rails.logger.error result
+                @@insertThread = nil
+            ensure
+                Rails.logger.flush
+            end
+        else
+            result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
+        end
+        
 		return result
 	end
 	
 	private
 	
-	private_class_method def self.insertdata(_datas)
+	private_class_method def self.insertdata(_day, _datas)
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE} CUBE DATA CNT #{cnt}"
+			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -72,11 +78,12 @@ class TbSoDetail < ApplicationRecord
 		transaction do
 			connection.exec_query(query)
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE} Insert Error #{exception}"
+			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
 			cnt = exception
 			raise ActiveRecord::Rollback
 		ensure
-			query = nil
+            query = nil
+            Rails.logger.flush
 		end
 
 		return cnt
@@ -92,11 +99,13 @@ class TbSoDetail < ApplicationRecord
 		transaction do
 			query = "DELETE FROM %{table} WHERE so_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE} deletedata #{cnt}"
+			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE} deletedata Error #{exception}"
+			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
-			raise ActiveRecord::Rollback
+            raise ActiveRecord::Rollback
+        ensure
+            Rails.logger.flush
 		end
 		
 		return result

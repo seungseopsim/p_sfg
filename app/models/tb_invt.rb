@@ -3,40 +3,42 @@ class TbInvt < ApplicationRecord
 	COL = 'h_id, s_id, shop_id, gd_id, so_date, b_id, shop_nm, shop_sort, gd_nm, unit_id, min_qty, max_qty, bsn_qty, prs_qty, srate, real_qty, real_amt, so_qty, so_amt'.freeze
 	TABLE = "tb_invt".freeze
 	@@insertThread = nil
-	
+    #@@semaphore = Mutex.new
+    
 	def self.insert(_day)
 		result = "#{TABLE}-#{_day} : INSERT NO DATA"
 		
 		cubedata = Cubedb::VShInvt.selectall(_day)
 		if cubedata.present?
 			if deletedata(_day)
-				data = insertdata(cubedata)
+				data = insertdata(_day, cubedata)
 				result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
 			else
 				result = "#{TABLE}-#{_day} : INSERT ERROR"
 			end
 		end
-		
-		Rails.logger.info result
+
 		return result
 	end
 	
 	def self.insert_withThread(_day)
-		result = "#{TABLE} INSERTING...."
+		result = "#{TABLE}-#{_day} INSERTING...."
 		
 		if @@insertThread == nil
-			result = "#{TABLE} INSERT START...."
+			result = "#{TABLE}-#{_day} INSERT START...."
 			begin
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
-						insert(_day)
-						@@insertThread = nil
+                        result = insert(_day)
+                        RAils.logger.info result
+                        @@insertThread = nil
 					end
 				end
-			rescue RuntimeError => runtimeerror
-				Rails.logger.error "#{TABLE} RuntimeError #{runtimeerror}"
-				@@insertThread.exit
-				@@insertThread = nil
+			rescue => runtimeerror
+				Rails.logger.error "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+                @@insertThread = nil
+            ensure
+                Rails.logger.flush
 			end
 
 			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
@@ -49,11 +51,11 @@ class TbInvt < ApplicationRecord
 	
 	private
 	
-	private_class_method def self.insertdata(_datas)
+	private_class_method def self.insertdata(_day, _datas)
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE} CUBE DATA CNT #{cnt}"
+			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -74,11 +76,12 @@ class TbInvt < ApplicationRecord
 #		rescue ActiveRecord::RecordNotUnique 
 #			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE} Insert Error #{exception}"
+			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
 			cnt = 0
 			raise ActiveRecord::Rollback
 		ensure
-			query = nil
+            query = nil
+            Rails.logger.flush
 		end
 
 		return cnt
@@ -94,11 +97,13 @@ class TbInvt < ApplicationRecord
 		transaction do
 			query = "DELETE FROM %{table} WHERE so_date = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE} deletedata #{cnt}"
+			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE} deletedata Error #{exception}"
+			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
-			raise ActiveRecord::Rollback
+            raise ActiveRecord::Rollback
+        ensure
+            Rails.logger.flush
 		end
 		
 		return result
@@ -123,7 +128,7 @@ class TbInvt < ApplicationRecord
 		so_qty = data['SO_QTY'].blank? ? 'NULL' : data['SO_QTY']
 		so_amt = data['SO_AMT'].blank? ? 'NULL' : data['SO_AMT']
 
-		value = " '%{h_id}', '%{s_id}', '%{shop_id}', '%{gd_id}', %{so_date}, '%{b_id}', \"%{shop_nm}\", %{shop_sort}, \"%{gd_nm}\", '%{unit_id}', %{min_qty}, %{max_qty}, %{bsn_qty}, %{prs_qty}, %{srate}, %{real_qty}, %{real_amt}, %{so_qty}, %{so_amt} " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], gd_id: data['GD_ID'], so_date: so_date, b_id: data['B_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, gd_nm: data['GD_NM'], unit_id: data['UNIT_ID'], min_qty: min_qty, max_qty: max_qty, bsn_qty: bsn_qty, prs_qty: prs_qty, srate: srate, real_qty: real_qty, real_amt: real_amt, so_qty: so_qty, so_amt: so_amt ]
+		value = "'%{h_id}', '%{s_id}', '%{shop_id}', '%{gd_id}', %{so_date}, '%{b_id}', \"%{shop_nm}\", %{shop_sort}, \"%{gd_nm}\", '%{unit_id}', %{min_qty}, %{max_qty}, %{bsn_qty}, %{prs_qty}, %{srate}, %{real_qty}, %{real_amt}, %{so_qty}, %{so_amt} " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], gd_id: data['GD_ID'], so_date: so_date, b_id: data['B_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, gd_nm: data['GD_NM'], unit_id: data['UNIT_ID'], min_qty: min_qty, max_qty: max_qty, bsn_qty: bsn_qty, prs_qty: prs_qty, srate: srate, real_qty: real_qty, real_amt: real_amt, so_qty: so_qty, so_amt: so_amt ]
 
 		return "%{val}" % [val: value]
 	end

@@ -3,7 +3,8 @@ class TbSalesDetail < ApplicationRecord
 	COL = 'h_id, s_id, shop_id, bsn_dt, bsn_no, bg_no, b_id, shop_nm, shop_sort, b_vst_cnt, gd_id, gd_nm, bg_st, bg_odr_st, bg_gd_st, bg_odr_dt, bg_stt_dt, bg_qty, bg_uc, bg_amt, bg_gd_dst_amt, bg_dst_amt, bg_real_amt, bg_svc_crg_amt, bg_vos_amt, bg_tax_amt, bg_apl_vos_amt, bg_apl_tax_amt, stb_id, bg_ord_sort_no, bg_ord_qty, bg_ord_pos_id, bg_mod_pos_id, del_id, bg_ccl_id, dst_id, bg_bf_bg_no, bg_bf_stb_id, bg_bill_msg, bg_rtn_id, bg_rtn_bsn_dt, bg_rtn_bsn_no, bg_rtn_bg_no, bg_new_gd_nm, live_yn, cret_usrid, cret_dt, mod_usrid, mod_dt'.freeze
 	TABLE = 'tb_sales_detail'.freeze
 	@@insertThread = nil
-	
+    #@@semaphore = Mutex.new
+        
 	def self.insert(_day)
 		result = "#{TABLE}-#{_day} : INSERT NO DATA"
 		
@@ -13,48 +14,51 @@ class TbSalesDetail < ApplicationRecord
 				1.step(cubedatacnt, DATAOFFSET) do | index |
 					offset = index + DATAOFFSET
 					cubedata = Cubedb::VShSalesDetail.select_range(_day, index, offset)
-					data = insertdata(cubedata)
+					data = insertdata(_day, cubedata)
 					result = "#{_day}: #{TABLE} INSERT RANGE #{index}~#{offset} #{data}"
-					Rails.logger.info result
+	                Rails.logger.info result
 				end
 				result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedatacnt} : INSERT #{cubedatacnt}"
 			else
 				result = "#{TABLE}-#{_day} : INSERT ERROR"
 			end	
 		end
-		Rails.logger.info result
+		#@@semaphore.synchronize do
+        #    Rails.logger.info result
+        #end
 		return result
 	end
 	
 	def self.insert_withThread(_day)
-		result = "#{TABLE} INSERTING...."
+		result = "#{TABLE}-#{_day} INSERTING...."
 		if( @@insertThread == nil)
-			result = "#{TABLE} INSERT START...."
+			result = "#{TABLE}-#{_day} INSERT START...."
 			begin
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
-						insert(_day)
-						@@insertThread = nil
+                        result = insert(_day)
+                        Rails.logger.info result
+                        @@insertThread = nil
 					end
 				end
-			rescue RuntimeError => runtimeerror
-				result = "#{TABLE} RuntimeError #{runtimeerror}"
+			rescue => runtimeerror
+				result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
 				Rails.logger.error result
-				@@insertThread.exit
-				@@insertThread = nil
-			end
+                @@insertThread = nil
+            ensure
+                Rails.logger.flush
+            end 
 		end
 		return result
 	end
 	
 
-	private
-	
-	private_class_method def self.insertdata(_datas)
+private
+	private_class_method def self.insertdata(_day, _datas)
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE} CUBE DATA CNT #{cnt}"
+			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -73,12 +77,13 @@ class TbSalesDetail < ApplicationRecord
 		transaction do
 			connection.exec_query(query)
 #		rescue ActiveRecord::RecordNotUnique 
-#			Rails.logger.error "SALES_DETAIL Insert Error #{exception}"
+#			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE} Insert Error #{exception}"
+			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
 			raise ActiveRecord::Rollback
 		ensure
-			query = nil
+            query = nil
+            Rails.logger.flush
 		end
 
 		return cnt
@@ -94,11 +99,13 @@ class TbSalesDetail < ApplicationRecord
 		transaction do
 			query = "DELETE FROM %{table} WHERE bsn_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE} deletedata #{cnt}"
+			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE} deletedata Error #{exception}"
+			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
-			raise ActiveRecord::Rollback
+            raise ActiveRecord::Rollback
+        ensure
+            Rails.logger.flush
 		end
 		
 		return result
