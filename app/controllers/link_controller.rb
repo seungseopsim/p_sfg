@@ -110,12 +110,16 @@ class LinkController < ApplicationController
     end
 	
 	def date_valid?(date)
-		format = '%Y-%m-%d'
-		DateTime.strptime(date, format) 
-		Time.zone.iso8601(date)
-		true
-	rescue ArgumentError
-		false
+        result = true
+        begin
+            format = '%Y-%m-%d'
+            DateTime.strptime(date, format) 
+            Time.zone.iso8601(date)
+        rescue ArgumentError
+           result = false
+        end
+        
+        return result
 	end
 	
 end

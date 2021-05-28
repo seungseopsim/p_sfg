@@ -6,12 +6,17 @@ class Reportroom < ApplicationRecord
 	# 보고서 저장
 	def self.newreport(_user, _params)
 	
-		sql = nil
+		type = connection.quote(_params[:type])
+		userid = connection.quote(_user['idx_ccu_id'])
+		contents = connection.quote(_params[:contents])
+		plancontents = connection.quote(_params[:plancontents])
+		shoplist =  connection.quote(nil)
+
 		if(_params[:addresult] == '1')
-			sql = "INSERT INTO reportrooms ( roomtype, userid, contents, plancontents, bb_shoplist, created_at, updated_at ) VALUES( '%{type}', '%{userid}', '%{content}', '%{plancontent}', '%{shoplist}', now(), now()); " % [type: _params[:type], userid: _user['idx_ccu_id'], content: _params[:contents], plancontent: _params[:plancontents], shoplist: _user['bb_shoplist']]
-		else
-			sql = "INSERT INTO reportrooms ( roomtype, userid, contents, plancontents, created_at, updated_at ) VALUES( '%{type}', '%{userid}', '%{content}', '%{plancontent}', now(), now()); " % [type: _params[:type], userid: _user['idx_ccu_id'], content: _params[:contents], plancontent: _params[:plancontents]]
+			shoplist =  connection.quote(_user['bb_shoplist'])
 		end
+
+		sql = "INSERT INTO reportrooms ( roomtype, userid, contents, plancontents, bb_shoplist, created_at, updated_at ) VALUES( %{type}, %{userid}, %{content}, %{plancontent}, %{shoplist}, now(), now()); " % [type: type, userid: userid, content: contents, plancontent: plancontents, shoplist: shoplist]
 
 		#DateTime.current.to_s(:db)])
 		#Time.now.to_s(:db)
@@ -97,15 +102,17 @@ class Reportroom < ApplicationRecord
 	#보고서 업데이트
 	def self.updateReport(_user, _params, _changeparams)
 		
-		sql = nil
-
-		if(_changeparams[:addresult] == "1")
-			sql = "UPDATE reportrooms SET contents = '%{content}', plancontents = '%{plancontents}', bb_shoplist = '%{shoplist}', updated_at = now() WHERE id = '%{id}';" % [content: _changeparams['contents'], plancontents: _changeparams['plancontents'], shoplist: _user['bb_shoplist'], id: _params['id'] ]
-		else
-			sql = "UPDATE reportrooms SET contents = '%{content}', plancontents = '%{plancontents}', bb_shoplist = '', updated_at = now() WHERE id = '%{id}';" % [content: _changeparams['contents'], plancontents: _changeparams['plancontents'], id: _params['id'] ]
+		id = connection.quote(_params['id'])
+		contents = connection.quote(_changeparams[:contents])
+		plancontents = connection.quote(_changeparams[:plancontents])
+		shoplist =  connection.quote(nil)
+		
+		if(_changeparams[:addresult] == '1')
+			shoplist =  connection.quote(_user['bb_shoplist'])
 		end
 		
-		
+		sql = "UPDATE reportrooms SET contents = %{content}, plancontents = %{plancontents}, bb_shoplist = %{shoplist}, updated_at = now() WHERE id = %{id};" % [content: contents, plancontents: plancontents, shoplist: shoplist, id: id ]
+				
 		begin
 			transaction do
 		 		connection.update(sql)

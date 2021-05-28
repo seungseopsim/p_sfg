@@ -17,34 +17,49 @@ class IdxInvt < ApplicationRecord
 			return "Insert:#{insertCnt} / Update:#{updateCnt}"
 		end	
 
-		_datas.each do |data|
+		_datas.each do |data|	
 		begin
-			gd_bsn_unit_per = data['GD_BSN_UNIT_PER'].blank? ? 'NULL' : data['GD_BSN_UNIT_PER']
-			gd_stk_gd_per = data['GD_STK_GD_PER'].blank? ? 'NULL' : data['GD_STK_GD_PER']
-			cret_dt = data['CRET_DT'].blank? ? 'NULL' : "'#{data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-			mod_dt = data['MOD_DT'].blank? ? 'NULL' : "'#{data['MOD_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
+			h_id = connection.quote(data['H_ID'])
+			s_id = connection.quote(data['S_ID'])
+			shop_id = connection.quote(data['SHOP_ID'])
+			gd_id = connection.quote(data['GD_ID'])
+			gd_nm = connection.quote(data['GD_NM'])
+			unit_id = connection.quote(data['UNIT_ID'])
+			gdmr_id = connection.quote(data['GDMR_ID'])
+			live_yn = connection.quote(data['LIVE_YN'])
+			gd_bsn_unit_per = connection.quote(data['GD_BSN_UNIT_PER'])
+			gd_bsn_unit_id = connection.quote(data['GD_BSN_UNIT_ID'])
+			gd_stk_gd_per = connection.quote(data['GD_STK_GD_PER'])
+			memo = connection.quote(data['MEMO'])
+			cret_usrid = connection.quote(data['CRET_USRID'])
+			cret_dt = data['CRET_DT'].blank? ? nil : data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")
+			cret_dt = connection.quote(cret_dt)
+			mod_usrid = connection.quote(data['MOD_USRID'])
+			mod_dt = data['MOD_DT'].blank? ? nil : data['MOD_DT'].strftime("%Y-%m-%d %H:%M:%S")
+			mod_dt = connection.quote(mod_dt)
 			
-			query = "SELECT h_id AS CNT FROM %{table} WHERE h_id = '%{h_id}' AND s_id = '%{s_id}' AND shop_id = '%{shop_id}' AND gd_id = '%{gd_id}';" % [table: TABLE, h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], gd_id: data['GD_ID']]
+			query = "SELECT h_id AS CNT FROM #{TABLE} WHERE h_id = #{h_id} AND s_id = #{s_id} AND shop_id = #{shop_id} AND gd_id = #{gd_id};" 
 			
 			result = connection.select_one(query)
 	
 			if result.present?
-				value = "gd_nm = '%{gd_nm}', unit_id = '%{unit_id}', gdmr_id = '%{gdmr_id}', live_yn = '%{live_yn}', gd_bsn_unit_per = %{gd_bsn_unit_per}, gd_bsn_unit_id = '%{gd_bsn_unit_id}', gd_stk_gd_per = %{gd_stk_gd_per}, memo = '%{memo}', cret_usrid = '%{cret_usrid}', cret_dt = %{cret_dt}, mod_usrid = '%{mod_usrid}', mod_dt = %{mod_dt} " % [gd_nm: data['GD_NM'], unit_id: data['UNIT_ID'], gdmr_id: data['GDMR_ID'], live_yn: data['LIVE_YN'], gd_bsn_unit_per: gd_bsn_unit_per, gd_bsn_unit_id: data['GD_BSN_UNIT_ID'], gd_stk_gd_per: gd_stk_gd_per, memo: data['MEMO'], cret_usrid: data['CRET_USRID'], cret_dt: cret_dt, mod_usrid: data['MOD_USRID'], mod_dt: mod_dt ]
+				value = "gd_nm = #{gd_nm}, unit_id = #{unit_id}, gdmr_id = #{gdmr_id}, live_yn = #{live_yn}, gd_bsn_unit_per = #{gd_bsn_unit_per}, gd_bsn_unit_id = #{gd_bsn_unit_id}, gd_stk_gd_per = #{gd_stk_gd_per}, memo = #{memo}, cret_usrid = #{cret_usrid}, cret_dt = #{cret_dt}, mod_usrid = #{mod_usrid}, mod_dt = #{mod_dt} " 
 				
 				bInsert = false		
-				query = "UPDATE %{table} SET %{val} WHERE h_id = '%{h_id}' AND s_id = '%{s_id}' AND shop_id = '%{shop_id}' AND gd_id = '%{gd_id}';" % [table: TABLE, val: value, h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], gd_id: data['GD_ID']]
+				query = "UPDATE #{TABLE} SET #{value} WHERE h_id = #{h_id} AND s_id = #{s_id} AND shop_id = #{shop_id} AND gd_id = #{gd_id};" 
 				
 			else
-				value = "'%{h_id}','%{s_id}','%{shop_id}','%{gd_id}','%{gd_nm}','%{unit_id}','%{gdmr_id}','%{live_yn}', %{gd_bsn_unit_per}, '%{gd_bsn_unit_id}', %{gd_stk_gd_per}, '%{memo}', '%{cret_usrid}', %{cret_dt}, '%{mod_usrid}', %{mod_dt}" % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], gd_id: data['GD_ID'], gd_nm: data['GD_NM'], unit_id: data['UNIT_ID'], gdmr_id: data['GDMR_ID'], live_yn: data['LIVE_YN'], gd_bsn_unit_per: gd_bsn_unit_per, gd_bsn_unit_id: data['GD_BSN_UNIT_ID'], gd_stk_gd_per: gd_stk_gd_per, memo: data['MEMO'], cret_usrid: data['CRET_USRID'], cret_dt: cret_dt, mod_usrid: data['MOD_USRID'], mod_dt: mod_dt ]
+				value = "#{h_id}, #{s_id}, #{shop_id}, #{gd_id}, #{gd_nm}, #{unit_id}, #{gdmr_id}, #{live_yn}, #{gd_bsn_unit_per}, #{gd_bsn_unit_id}, #{gd_stk_gd_per}, #{memo}, #{cret_usrid}, #{cret_dt}, #{mod_usrid}, #{mod_dt}"
 				
 				bInsert = true
-				query = "INSERT INTO %{table} (%{col}) VALUES(%{val}); " % [table: TABLE, col: COL, val: value ]
+				query = "INSERT INTO #{TABLE} (#{COL}) VALUES(#{value}); " 
 			end
-				
-			result = connection.execute(query)
-
+			
+			transaction do
+				result = connection.execute(query)
+			end
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "IDX_INVT INSERT Error #{exception}"
+			puts "IDX_INVT DB Error #{exception}"
 			next
 		end
 			if bInsert

@@ -30,17 +30,19 @@ class TbCosDaily < ApplicationRecord
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
                         result = insert(_day)
-                        Rails.logger.info result
+                        puts result
                         @@insertThread = nil
 					end
 				end
 			rescue => runtimeerror
-				Rails.logger.error "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+				result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
                 @@insertThread = nil
             ensure
-                Rails.logger.flush
+                #Rails.logger.flush
+				puts result
 			end
-
+        else
+            result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
 			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
 			#	@@insertThread.join
 			#end
@@ -54,7 +56,7 @@ private
 	private_class_method def self.insertdata(_day, _datas)
 		cnt = 0
 		if _datas.blank?
-			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+			puts "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -75,12 +77,13 @@ private
 #		rescue ActiveRecord::RecordNotUnique 
 #			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
-			cnt = 0
+			#Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
+			puts "#{TABLE}-#{_day} Insert Error #{exception}"
+			cnt = -1
 			raise ActiveRecord::Rollback
 		ensure
             query = nil
-            Rails.logger.flush
+            #Rails.logger.flush
 		end
 
 		return cnt
@@ -93,16 +96,18 @@ private
 			return false
 		end	
 		
+		log = nil
+		
 		transaction do
 			query = "DELETE FROM %{table} WHERE bsn_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			log = "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+			log = "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
             raise ActiveRecord::Rollback
         ensure
-            Rails.logger.flush
+			puts log
 		end
 		
 		return result
@@ -115,17 +120,21 @@ private
 		if data.blank?
 			return nil
 		end
+		
+		h_id = connection.quote(data['H_ID'])
+		s_id = connection.quote(data['S_ID'])
+		shop_id = connection.quote(data['SHOP_ID'])
+		bsn_dt = data['BSN_DT'].blank? ? nil : data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		bsn_dt = connection.quote(bsn_dt)
+		b_id = connection.quote(data['B_ID'])
+		shop_nm = connection.quote(data['SHOP_NM'])
+		shop_sort = connection.quote(data['SHOP_SORT'])
+		sbg_real_amt = connection.quote(data['SBG_REAL_AMT'])
+		sb_avg_amt = connection.quote(data['SB_AVG_AMT'])
+		sog_real_amt = connection.quote(data['SOG_REAL_AMT'])
+		sog_rate = connection.quote(data['SOG_RATE'])
 
-		bsn_dt = data['BSN_DT'].blank? ? 'NULL' : "'#{data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-		sbg_real_amt = data['SBG_REAL_AMT'].blank? ? 'NULL' : data['SBG_REAL_AMT']
-		sb_avg_amt = data['SB_AVG_AMT'].blank? ? 'NULL' : data['SB_AVG_AMT']
-		sog_real_amt = data['SOG_REAL_AMT'].blank? ? 'NULL' : data['SOG_REAL_AMT']
-		sog_rate = data['SOG_RATE'].blank? ? 'NULL' : data['SOG_RATE']
-
-		value = " '%{h_id}', '%{s_id}', '%{shop_id}', %{bsn_dt}, '%{b_id}', \"%{shop_nm}\", %{shop_sort}, %{sbg_real_amt}, %{sb_avg_amt}, %{sog_real_amt}, %{sog_rate} " % 
-		[ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], bsn_dt: bsn_dt, b_id: data['B_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, sbg_real_amt: sbg_real_amt, sb_avg_amt: sb_avg_amt, sog_real_amt: sog_real_amt, sog_rate: sog_rate ]
-
+		value = "#{h_id}, #{s_id}, #{shop_id}, #{bsn_dt}, #{b_id}, #{shop_nm}, #{shop_sort}, #{sbg_real_amt}, #{sb_avg_amt}, #{sog_real_amt}, #{sog_rate}" 
 		return "%{val}" % [val: value]
 	end
 end

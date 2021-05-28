@@ -10,18 +10,15 @@ class TbSoDetail < ApplicationRecord
 		result = "#{TABLE}-#{_day} : INSERT NO DATA"
 		
         cubedata = Cubedb::VShSoDetail.selectall(_day)
-        begin
-            if cubedata.present?
-                if deletedata(_day)
-                    data = insertdata(_day, cubedata)
-                    result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
-                else
-                    result = "#{TABLE}-#{_day} : INSERT ERROR"
-                end
-            end
-        rescue => exception
-            Rails.logger.error "#{TABLE}-#{_day} : INSERT ERROR: #{exception}"
-        end
+		if cubedata.present?
+			if deletedata(_day)
+				data = insertdata(_day, cubedata)
+				result = "#{TABLE}-#{_day} : CUBE DATA CNT #{cubedata.length} : INSERT #{data}"
+			else
+				result = "#{TABLE}-#{_day} : INSERT ERROR"
+			end
+		end
+
 
 		return result
 	end
@@ -30,21 +27,22 @@ class TbSoDetail < ApplicationRecord
 		result = "#{TABLE}-#{_day} INSERTING...."
 		
 		if @@insertThread == nil
+			result = "#{TABLE}-#{_day} INSERT START...."
 			begin
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
                         result = insert(_day)
-                        Rails.logger.info result
+                        #Rails.logger.info result
+                        puts result
                         @@insertThread = nil
 					end
                 end
-                result = "#{TABLE}-#{_day} INSERT START....#{@@insertThread.status}"
             rescue => runtimeerror
                 result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
-                Rails.logger.error result
+                #Rails.logger.error result
                 @@insertThread = nil
-            ensure
-                Rails.logger.flush
+			ensure
+				puts result
             end
         else
             result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
@@ -59,7 +57,8 @@ class TbSoDetail < ApplicationRecord
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+            #Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+            puts "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -74,16 +73,17 @@ class TbSoDetail < ApplicationRecord
 		end
 		
 		query += ';'
-
+		
 		transaction do
 			connection.exec_query(query)
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
-			cnt = exception
+			#Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
+            cnt = -1
+            puts  "#{TABLE}-#{_day} Insert Error #{exception}"
 			raise ActiveRecord::Rollback
 		ensure
             query = nil
-            Rails.logger.flush
+            #Rails.logger.flush
 		end
 
 		return cnt
@@ -96,16 +96,21 @@ class TbSoDetail < ApplicationRecord
 			return false
 		end	
 
+		log = nil
+		
 		transaction do
 			query = "DELETE FROM %{table} WHERE so_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			#Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			log = "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+            #Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+            log = "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
             raise ActiveRecord::Rollback
         ensure
-            Rails.logger.flush
+            #Rails.logger.flush
+			puts log
 		end
 		
 		return result
@@ -117,25 +122,54 @@ class TbSoDetail < ApplicationRecord
 		if data.blank?
 			return nil
 		end
-	
-		so_dt = data['SO_DT'].blank? ? 'NULL' : "'#{data['SO_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-		sog_qty = data['SOG_QTY'].blank? ? 'NULL' : data['SOG_QTY']
-		sog_uc = data['SOG_UC'].blank? ? 'NULL' : data['SOG_UC']
-		sog_amt = data['SOG_AMT'].blank? ? 'NULL' : data['SOG_AMT']
-		sog_real_amt = data['SOG_REAL_AMT'].blank? ? 'NULL' : data['SOG_REAL_AMT']
-		sog_vos_amt = data['SOG_VOS_AMT'].blank? ? 'NULL' : data['SOG_VOS_AMT']
-		sog_tax_amt = data['SOG_TAX_AMT'].blank? ? 'NULL' : data['SOG_TAX_AMT']
-		sog_taxf_amt = data['SOG_TAXF_AMT'].blank? ? 'NULL' : data['SOG_TAXF_AMT']
-		sog_ccl_amt = data['SOG_CCL_AMT'].blank? ? 'NULL' : data['SOG_CCL_AMT']
-		sog_odr_qty = data['SOG_ODR_QTY'].blank? ? 'NULL' : data['SOG_ODR_QTY']
-		sog_rcv_qty = data['SOG_RCV_QTY'].blank? ? 'NULL' : data['SOG_RCV_QTY']
-		sog_si_qty = data['SOG_SI_QTY'].blank? ? 'NULL' : data['SOG_SI_QTY']
-		sort_no = data['SORT_NO'].blank? ? 'NULL' : data['SORT_NO']
-		cret_dt = data['CRET_DT'].blank? ? 'NULL' : "'#{data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		mod_dt = data['MOD_DT'].blank? ? 'NULL' : "'#{data['MOD_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
 
-		value = " '%{h_id}', '%{s_id}', '%{shop_id}', %{so_dt}, %{so_no}, %{sog_no}, '%{b_id}', \"%{shop_nm}\", %{shop_sort}, '%{gd_id}', '%{sog_jc_st}', '%{unit_id}', \"%{unit_nm}\", %{sog_qty}, %{sog_uc}, %{sog_amt}, %{sog_real_amt}, %{sog_vos_amt}, %{sog_tax_amt}, %{sog_taxf_amt}, %{sog_ccl_amt}, '%{sog_tax_st}', %{sog_odr_qty}, %{sog_rcv_qty}, %{sog_si_qty}, '%{trd_id}', \"%{trd_nm}\", \"%{gd_nm}\", '%{live_yn}', \"%{memo}\", '%{info}', %{sort_no}, '%{cret_usrid}', %{cret_dt}, '%{mod_usrid}', %{mod_dt}, '%{gdmr_id}', '%{gdmj_id}', \"%{gdmr_nm}\", \"%{gdmj_nm}\" " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], so_dt: so_dt, so_no: data['SO_NO'], sog_no: data['SOG_NO'], b_id: data['B_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, gd_id: data['GD_ID'], sog_jc_st: data['SOG_JC_ST'], unit_id: data['UNIT_ID'], unit_nm: data['UNIT_NM'], sog_qty: sog_qty, sog_uc: sog_uc, sog_amt: sog_amt, sog_real_amt: sog_real_amt, sog_vos_amt: sog_vos_amt, sog_tax_amt: sog_tax_amt, sog_taxf_amt: sog_taxf_amt, sog_ccl_amt: sog_ccl_amt, sog_tax_st: data['SOG_TAX_ST'], sog_odr_qty: sog_odr_qty, sog_rcv_qty: sog_rcv_qty, sog_si_qty: sog_si_qty, trd_id: data['TRD_ID'], trd_nm: data['TRD_NM'], gd_nm: data['GD_NM'], live_yn: data['LIVE_YN'], memo: data['MEMO'], info: data['INFO'], sort_no: sort_no, cret_usrid: data['CRET_USRID'], cret_dt: cret_dt, mod_usrid: data['MOD_USRID'], mod_dt: mod_dt, gdmr_id: data['GDMR_ID'], gdmj_id: data['GDMJ_ID'], gdmr_nm: data['GDMJ_NM'], gdmj_nm: data['GDMJ_NM'] ]
+		h_id = connection.quote(data['H_ID'])
+		s_id = connection.quote(data['S_ID'])
+		shop_id = connection.quote(data['SHOP_ID'])
+		so_dt = data['SO_DT'].blank? ? nil : data['SO_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		so_dt = connection.quote(so_dt)	
+		so_no = connection.quote(data['SO_NO'])
+		sog_no = connection.quote(data['SOG_NO'])
+		b_id = connection.quote(data['B_ID'])
+		shop_nm =  connection.quote(data['SHOP_NM'])
+		shop_sort =  connection.quote(data['SHOP_SORT'])
+		unit_nm =  connection.quote(data['UNIT_NM'])
+		gd_id = connection.quote(data['GD_ID'])
+		sog_jc_st = connection.quote(data['SOG_JC_ST'])
+		unit_id = connection.quote(data['UNIT_ID'])
+		unit_nm = connection.quote(data['UNIT_NM'])
+		sog_qty =  connection.quote(data['SOG_QTY'])
+		sog_uc = connection.quote(data['SOG_UC'])
+		sog_amt = connection.quote(data['SOG_AMT'])
+		sog_real_amt = connection.quote(data['SOG_REAL_AMT'])
+		sog_vos_amt = connection.quote(data['SOG_VOS_AMT'])
+		sog_tax_amt = connection.quote(data['SOG_TAX_AMT'])
+		sog_taxf_amt = connection.quote(data['SOG_TAXF_AMT'])
+		sog_ccl_amt = connection.quote(data['SOG_CCL_AMT'])
+		sog_tax_st = connection.quote(data['SOG_TAX_ST'])
+		sog_odr_qty = connection.quote(data['SOG_ODR_QTY'])
+		sog_rcv_qty = connection.quote(data['SOG_RCV_QTY'])
+		sog_si_qty = connection.quote(data['SOG_SI_QTY'])
+		trd_id = connection.quote(data['TRD_ID'])
+		trd_nm = connection.quote(data['TRD_NM'])
+		gd_nm = connection.quote(data['GD_NM'])
+		live_yn = connection.quote(data['LIVE_YN'])
+		memo = connection.quote(data['MEMO'])
+		info = connection.quote(data['INFO'])
+		sort_no = connection.quote(data['SORT_NO'])
+		cret_usrid = connection.quote(data['CRET_USRID'])
+		cret_dt = data['CRET_DT'].blank? ? nil : data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")
+	    cret_dt = connection.quote(cret_dt)
+		mod_usrid = connection.quote(data['MOD_USRID'])
+		mod_dt = data['MOD_DT'].blank? ? nil : data['MOD_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		mod_dt = connection.quote(mod_dt)
+		gdmr_id = connection.quote(data['GDMR_ID'])
+		gdmj_id = connection.quote(data['GDMJ_ID'])
+		gdmr_nm = connection.quote(data['GDMR_NM'])
+		gdmj_nm = connection.quote(data['GDMJ_NM'])
+
+		
+		value = "#{h_id}, #{s_id}, #{shop_id}, #{so_dt}, #{so_no}, #{sog_no}, #{b_id}, #{shop_nm}, #{shop_sort}, #{gd_id}, #{sog_jc_st}, #{unit_id}, #{unit_nm}, #{sog_qty}, #{sog_uc}, #{sog_amt}, #{sog_real_amt}, #{sog_vos_amt}, #{sog_tax_amt}, #{sog_taxf_amt}, #{sog_ccl_amt}, #{sog_tax_st}, #{sog_odr_qty}, #{sog_rcv_qty}, #{sog_si_qty}, #{trd_id}, #{trd_nm}, #{gd_nm}, #{live_yn}, #{memo}, #{info}, #{sort_no}, #{cret_usrid}, #{cret_dt}, #{mod_usrid}, #{mod_dt}, #{gdmr_id}, #{gdmj_id}, #{gdmr_nm}, #{gdmj_nm}" 
 
 		return "%{val}" % [val: value]
 	end

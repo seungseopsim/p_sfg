@@ -34,18 +34,18 @@ class TbSalesDaily < ApplicationRecord
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
                         result = insert(_day)
-                        Rails.logger.info result
+                        puts result
                         @@insertThread = nil
 					end
 				end
             rescue => runtimeerror
                 result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
-				Rails.logger.error result
                 @@insertThread = nil
             ensure
-                Rails.logger.flush
+               puts result
 			end
-
+        else
+            result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
 			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
 			#	@@insertThread.join
 			#end
@@ -527,7 +527,7 @@ private
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+			puts "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -543,17 +543,17 @@ private
 		
 		query += ';'
 
+		
 		transaction do
 			connection.exec_query(query)
 #		rescue ActiveRecord::RecordNotUnique 
 #			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
-			cnt = 0
+			puts "#{TABLE}-#{_day} Insert Error #{exception}"
+			cnt = -1
 			raise ActiveRecord::Rollback
 		ensure
             query = nil
-            Rails.logger.flush
 		end
 
 		return cnt
@@ -566,16 +566,18 @@ private
 			return false
 		end	
 		
+		log = nil
+		
 		transaction do
 			query = "DELETE FROM %{table} WHERE bsn_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			log = "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+			log = "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
             raise ActiveRecord::Rollback
         ensure
-            Rails.logger.flush
+            puts log
 		end
 
 		return result
@@ -588,50 +590,60 @@ private
 			return nil
 		end
 		
-		bsn_dt = data['BSN_DT'].blank? ? 'NULL' : "'#{data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		ss_sort = data['SS_SORT'].blank? ? 'NULL' : data['SS_SORT']
-		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-		sb_amt = data['SB_AMT'].blank? ? 'NULL' : data['SB_AMT']
-		sb_rtn_amt = data['SB_RTN_AMT'].blank? ? 'NULL' : data['SB_RTN_AMT']
-		sb_ccl_amt = data['SB_CCL_AMT'].blank? ? 'NULL' : data['SB_CCL_AMT']
-		sb_gd_dst_amt = data['SB_GD_DST_AMT'].blank? ? 'NULL' : data['SB_GD_DST_AMT']
-		sb_dst_amt = data['SB_DST_AMT'].blank? ? 'NULL' : data['SB_DST_AMT']
-		sb_real_amt = data['SB_REAL_AMT'].blank? ? 'NULL' : data['SB_REAL_AMT']
-		sb_vst_cnt = data['SB_VST_CNT'].blank? ? 'NULL' : data['SB_VST_CNT']
-		sb_ord_cnt = data['SB_ORD_CNT'].blank? ? 'NULL' : data['SB_ORD_CNT']
-		sb_vos_amt = data['SB_VOS_AMT'].blank? ? 'NULL' : data['SB_VOS_AMT']
-		sb_tax_amt = data['SB_TAX_AMT'].blank? ? 'NULL' : data['SB_TAX_AMT']
-		sb_taxf_amt = data['SB_TAXF_AMT'].blank? ? 'NULL' : data['SB_TAXF_AMT']
-		sb_svc_crg_amt = data['SB_SVC_CRG_AMT'].blank? ? 'NULL' : data['SB_SVC_CRG_AMT']
-		sb_tb_trv_per = data['SB_TB_TRV_PER'].blank? ? 'NULL' : data['SB_TB_TRV_PER']
-		sb_rcb_amt = data['SB_RCB_AMT'].blank? ? 'NULL' : data['SB_RCB_AMT']
-		sb_cash_amt = data['SB_CASH_AMT'].blank? ? 'NULL' : data['SB_CASH_AMT']
-		sb_crt_amt = data['SB_CRT_AMT'].blank? ? 'NULL' : data['SB_CRT_AMT']
-		sb_vcr_amt = data['SB_VCR_AMT'].blank? ? 'NULL' : data['SB_VCR_AMT']
-		sb_tick_amt = data['SB_TICK_AMT'].blank? ? 'NULL' : data['SB_TICK_AMT']
-		sb_cs_pnt_amt = data['SB_CS_PNT_AMT'].blank? ? 'NULL' : data['SB_CS_PNT_AMT']
-		sb_oln_amt = data['SB_OLN_AMT'].blank? ? 'NULL' : data['SB_OLN_AMT']
-		sb_mlt_amt = data['SB_MLT_AMT'].blank? ? 'NULL' : data['SB_MLT_AMT']
-		sb_etc_amt = data['SB_ETC_AMT'].blank? ? 'NULL' : data['SB_ETC_AMT']
-		sb_vcr_in_amt = data['SB_VCR_IN_AMT'].blank? ? 'NULL' : data['SB_VCR_IN_AMT']
-		sb_tick_in_amt = data['SB_TICK_IN_AMT'].blank? ? 'NULL' : data['SB_TICK_IN_AMT']
-		sb_etc_in_amt = data['SB_ETC_IN_AMT'].blank? ? 'NULL' : data['SB_ETC_IN_AMT']
-		sb_cash_rct_cnt = data['SB_CASH_RCT_CNT'].blank? ? 'NULL' : data['SB_CASH_RCT_CNT']
-		sb_cash_rct_amt = data['SB_CASH_RCT_AMT'].blank? ? 'NULL' : data['SB_CASH_RCT_AMT']
-		sb_ccl_cnt = data['SB_CCL_CNT'].blank? ? 'NULL' : data['SB_CCL_CNT']
-		sb_rtn_cnt = data['SB_RTN_CNT'].blank? ? 'NULL' : data['SB_RTN_CNT']
-		sb_shop_cnt = data['SB_SHOP_CNT'].blank? ? 'NULL' : data['SB_SHOP_CNT']
-		sb_pkg_cnt = data['SB_PKG_CNT'].blank? ? 'NULL' : data['SB_PKG_CNT']
-		sb_dlr_cnt = data['SB_DLR_CNT'].blank? ? 'NULL' : data['SB_DLR_CNT']
-		sb_epse_amt = data['SB_EPSE_AMT'].blank? ? 'NULL' : data['SB_EPSE_AMT']
-		sb_trn_dt = data['SB_TRN_DT'].blank? ? 'NULL' : "'#{data['SB_TRN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		cret_dt = data['CRET_DT'].blank? ? 'NULL' : "'#{data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")}'" 
-		sb_to_dt = data['SB_TO_DT'].blank? ? 'NULL' : "'#{data['SB_TO_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		sb_fm_cash_amt = data['SB_FM_CASH_AMT'].blank? ? 'NULL' : data['SB_FM_CASH_AMT']
-		sb_to_cash_amt = data['SB_TO_CASH_AMT'].blank? ? 'NULL' : data['SB_TO_CASH_AMT']	
+		h_id = connection.quote(data['H_ID'])
+		s_id = connection.quote(data['S_ID'])
+		shop_id = connection.quote(data['SHOP_ID'])
+		bsn_dt = data['BSN_DT'].blank? ? nil : data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		bsn_dt = connection.quote(bsn_dt)
+		b_id = connection.quote(data['B_ID'])
+		ss_sort = connection.quote(data['SS_SORT'])
+		shop_sort = connection.quote(data['SHOP_SORT'])
+		shop_nm = connection.quote(data['SHOP_NM'])
+		sb_amt = connection.quote(data['SB_AMT'])
+		sb_rtn_amt = connection.quote(data['SB_RTN_AMT'])
+		sb_ccl_amt = connection.quote(data['SB_CCL_AMT'])
+		sb_gd_dst_amt = connection.quote(data['SB_GD_DST_AMT'])
+		sb_dst_amt = connection.quote(data['SB_DST_AMT'])
+		sb_real_amt = connection.quote(data['SB_REAL_AMT'])
+		sb_vst_cnt = connection.quote(data['SB_VST_CNT'])
+		sb_ord_cnt = connection.quote(data['SB_ORD_CNT'])
+		sb_vos_amt = connection.quote(data['SB_VOS_AMT'])
+		sb_tax_amt = connection.quote(data['SB_TAX_AMT'])
+		sb_taxf_amt = connection.quote(data['SB_TAXF_AMT'])
+		sb_svc_crg_amt = connection.quote(data['SB_SVC_CRG_AMT'])
+		sb_tb_trv_per = connection.quote(data['SB_TB_TRV_PER'])
+		sb_rcb_amt = connection.quote(data['SB_RCB_AMT'])
+		sb_cash_amt = connection.quote(data['SB_CASH_AMT'])
+		sb_crt_amt = connection.quote(data['SB_CRT_AMT'])
+		sb_vcr_amt = connection.quote(data['SB_VCR_AMT'])
+		sb_tick_amt = connection.quote(data['SB_TICK_AMT'])
+		sb_cs_pnt_amt = connection.quote(data['SB_CS_PNT_AMT'])
+		sb_oln_amt = connection.quote(data['SB_OLN_AMT'])
+		sb_mlt_amt = connection.quote(data['SB_MLT_AMT'])
+		sb_etc_amt = connection.quote(data['SB_ETC_AMT'])
+		sb_vcr_in_amt = connection.quote(data['SB_VCR_IN_AMT'])
+		sb_tick_in_amt = connection.quote(data['SB_TICK_IN_AMT'])
+		sb_etc_in_amt = connection.quote(data['SB_ETC_IN_AMT'])
+		sb_cash_rct_cnt = connection.quote(data['SB_CASH_RCT_CNT'])
+		sb_cash_rct_amt = connection.quote(data['SB_CASH_RCT_AMT'])
+		sb_ccl_cnt = connection.quote(data['SB_CCL_CNT'])
+		sb_rtn_cnt = connection.quote(data['SB_RTN_CNT'])
+		sb_shop_cnt = connection.quote(data['SB_SHOP_CNT'])
+		sb_pkg_cnt = connection.quote(data['SB_PKG_CNT'])
+		sb_dlr_cnt = connection.quote(data['SB_DLR_CNT'])
+		sb_epse_amt = connection.quote(data['SB_EPSE_AMT'])
+		sb_trn_dt = data['SB_TRN_DT'].blank? ? nil : data['SB_TRN_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		sb_trn_dt = connection.quote(sb_trn_dt)
+		cret_dt = data['CRET_DT'].blank? ? nil : data['CRET_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		cret_dt = connection.quote(cret_dt)
+		sb_to_dt = data['SB_TO_DT'].blank? ? nil : data['SB_TO_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		sb_to_dt = connection.quote(sb_to_dt)
+		sb_mod_yn = connection.quote(data['SB_MOD_YN'])
+		sb_fm_cash_amt = connection.quote(data['SB_FM_CASH_AMT'])
+		sb_to_cash_amt = connection.quote(data['SB_TO_CASH_AMT'])
+		memo = connection.quote(data['MEMO'])
 
-		value = " '%{h_id}', '%{s_id}', '%{shop_id}', %{bsn_dt}, '%{b_id}', %{ss_sort}, %{shop_sort}, \"%{shop_nm}\", %{sb_amt}, %{sb_rtn_amt}, %{sb_ccl_amt}, %{sb_gd_dst_amt}, %{sb_dst_amt}, %{sb_real_amt}, %{sb_vst_cnt}, %{sb_ord_cnt}, %{sb_vos_amt}, %{sb_tax_amt}, %{sb_taxf_amt}, %{sb_svc_crg_amt}, %{sb_tb_trv_per}, %{sb_rcb_amt}, %{sb_cash_amt}, %{sb_crt_amt}, %{sb_vcr_amt}, %{sb_tick_amt}, %{sb_cs_pnt_amt}, %{sb_oln_amt}, %{sb_mlt_amt}, %{sb_etc_amt}, %{sb_vcr_in_amt}, %{sb_tick_in_amt}, %{sb_etc_in_amt}, %{sb_cash_rct_cnt}, %{sb_cash_rct_amt}, %{sb_ccl_cnt}, %{sb_rtn_cnt}, %{sb_shop_cnt}, '%{sb_pkg_cnt}', %{sb_dlr_cnt}, %{sb_epse_amt}, %{sb_trn_dt}, %{cret_dt}, %{sb_to_dt}, '%{sb_mod_yn}', %{sb_fm_cash_amt}, %{sb_to_cash_amt}, \"%{memo}\" " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], bsn_dt: bsn_dt, b_id: data['B_ID'], ss_sort: ss_sort, shop_sort: shop_sort, shop_nm: data['SHOP_NM'], sb_amt: sb_amt, sb_rtn_amt: sb_rtn_amt, sb_ccl_amt: sb_ccl_amt, sb_gd_dst_amt: sb_gd_dst_amt, sb_dst_amt: sb_dst_amt, sb_real_amt: sb_real_amt, sb_vst_cnt: sb_vst_cnt, sb_ord_cnt: sb_ord_cnt, sb_vos_amt: sb_vos_amt, sb_tax_amt: sb_tax_amt, sb_taxf_amt: sb_taxf_amt, sb_svc_crg_amt: sb_svc_crg_amt, sb_tb_trv_per: sb_tb_trv_per, sb_rcb_amt: sb_rcb_amt, sb_cash_amt: sb_cash_amt, sb_crt_amt: sb_crt_amt, sb_vcr_amt: sb_vcr_amt, sb_tick_amt: sb_tick_amt, sb_cs_pnt_amt: sb_cs_pnt_amt, sb_oln_amt: sb_oln_amt, sb_mlt_amt: sb_mlt_amt, sb_etc_amt: sb_etc_amt, sb_vcr_in_amt: sb_vcr_in_amt, sb_tick_in_amt: sb_tick_in_amt, sb_etc_in_amt: sb_etc_in_amt, sb_cash_rct_cnt: sb_cash_rct_cnt, sb_cash_rct_amt: sb_cash_rct_amt, sb_ccl_cnt: sb_ccl_cnt, sb_rtn_cnt: sb_rtn_cnt, sb_shop_cnt: sb_shop_cnt, sb_pkg_cnt: sb_pkg_cnt, sb_dlr_cnt: sb_dlr_cnt, sb_epse_amt: sb_epse_amt, sb_trn_dt: sb_trn_dt, cret_dt: cret_dt, sb_to_dt: sb_to_dt, sb_mod_yn: data['SB_MOD_YN'], sb_fm_cash_amt: sb_fm_cash_amt, sb_to_cash_amt: sb_to_cash_amt, memo: data['MEMO'] ]
-
+		value = "#{h_id}, #{s_id}, #{shop_id}, #{bsn_dt}, #{b_id}, #{ss_sort}, #{shop_sort}, #{shop_nm}, #{sb_amt}, #{sb_rtn_amt}, #{sb_ccl_amt}, #{sb_gd_dst_amt}, #{sb_dst_amt}, #{sb_real_amt}, #{sb_vst_cnt}, #{sb_ord_cnt}, #{sb_vos_amt}, #{sb_tax_amt}, #{sb_taxf_amt}, #{sb_svc_crg_amt}, #{sb_tb_trv_per}, #{sb_rcb_amt}, #{sb_cash_amt}, #{sb_crt_amt}, #{sb_vcr_amt}, #{sb_tick_amt}, #{sb_cs_pnt_amt}, #{sb_oln_amt}, #{sb_mlt_amt}, #{sb_etc_amt}, #{sb_vcr_in_amt}, #{sb_tick_in_amt}, #{sb_etc_in_amt}, #{sb_cash_rct_cnt}, #{sb_cash_rct_amt}, #{sb_ccl_cnt}, #{sb_rtn_cnt}, #{sb_shop_cnt}, #{sb_pkg_cnt}, #{sb_dlr_cnt}, #{sb_epse_amt}, #{sb_trn_dt}, #{cret_dt}, #{sb_to_dt}, #{sb_mod_yn}, #{sb_fm_cash_amt}, #{sb_to_cash_amt}, #{memo}" 
 		return "%{val}" % [val: value]
 	end
 	

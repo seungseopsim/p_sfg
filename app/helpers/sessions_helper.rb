@@ -6,7 +6,7 @@ module SessionsHelper
 	USER = 10			# 보고방
 	NOUSER = 0			# 로그인 불가
 	
-	CRYPT = ActiveSupport::MessageEncryptor.new(Rails.application.secrets.secret_key_base[0..31])
+	CRYPT = ActiveSupport::MessageEncryptor.new( ENV["SECRET_KEY_BASE"].nil? ? Rails.application.secrets.secret_key_base[0..31] : ENV["SECRET_KEY_BASE"][0..31])
 	
 	#로그인시 세션 토큰을 만들고 쿠키에 저장
 	def singn_in(_user)
@@ -78,8 +78,12 @@ module SessionsHelper
 		if _token.nil?
 			return nil
 		end
-		
-		token = CRYPT.decrypt_and_verify(Base64.decode64(_token))
+		begin
+			token = CRYPT.decrypt_and_verify(Base64.decode64(_token))
+		rescue => exception
+			token = nil
+			Rails.logger.error "SessionsHelper remember_token_decrypt_and_verify error #{exception}"
+		end
 		return token
 	end
 	

@@ -29,17 +29,18 @@ class TbSalesBill < ApplicationRecord
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
                         result = insert(_day)
-                        Rails.logger.info result
+                        puts result
                         @@insertThread = nil
 					end
 				end
 			rescue => runtimeerror
-				Rails.logger.error "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+				result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
                 @@insertThread = nil
             ensure
-                Rails.logger.flush
+               puts result
 			end
-
+        else
+            result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
 			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
 			#	@@insertThread.join
 			#end
@@ -54,7 +55,7 @@ class TbSalesBill < ApplicationRecord
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+			puts "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -75,11 +76,11 @@ class TbSalesBill < ApplicationRecord
 #		rescue ActiveRecord::RecordNotUnique 
 #			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
+			puts "#{TABLE}-#{_day} Insert Error #{exception}"
+			cnt = -1
 			raise ActiveRecord::Rollback
 		ensure
             query = nil
-            Rails.logger.flush
 		end
 
 		return cnt
@@ -91,16 +92,18 @@ class TbSalesBill < ApplicationRecord
 			return false
 		end	
 		
+		log = nil
+		
 		transaction do
 			query = "DELETE FROM %{table} WHERE bsn_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			log = "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+			log = "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
             raise ActiveRecord::Rollback
-        ensure
-            Rails.logger.flush
+		ensure
+			puts log
 		end
 
 		return result
@@ -113,21 +116,33 @@ class TbSalesBill < ApplicationRecord
 		if data.blank?
 			return nil
 		end
-		
-		bsn_dt = data['BSN_DT'].blank? ? 'NULL' : "'#{data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		bsn_no = data['BSN_NO'].blank? ? 'NULL' : data['BSN_NO']
-		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-		b_odr_dt = data['B_ODR_DT'].blank? ? 'NULL' : "'#{data['B_ODR_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		b_crg_dt = data['B_CRG_DT'].blank? ? 'NULL' : "'#{data['B_CRG_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		b_ccl_amt = data['B_CCL_AMT'].blank? ? 'NULL' : data['B_CCL_AMT']
-		b_dst_amt = data['B_DST_AMT'].blank? ? 'NULL' : data['B_DST_AMT']
-		b_rcb_amt = data['B_RCB_AMT'].blank? ? 'NULL' : data['B_RCB_AMT']
-		b_vst_cnt = data['B_VST_CNT'].blank? ? 'NULL' : data['B_VST_CNT']
-		b_crt_amt = data['B_CRT_AMT'].blank? ? 'NULL' : data['B_CRT_AMT']
-		b_cash_amt = data['B_CASH_AMT'].blank? ? 'NULL' : data['B_CASH_AMT']
-		b_etc_amt = data['B_ETC_AMT'].blank? ? 'NULL' : data['B_ETC_AMT']
+		h_id = connection.quote(data['H_ID'])
+		s_id = connection.quote(data['S_ID'])
+		shop_id = connection.quote(data['SHOP_ID'])
+		bsn_dt = data['BSN_DT'].blank? ? nil : data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		bsn_dt = connection.quote(bsn_dt)
+		bsn_no = connection.quote(data['BSN_NO'])
+		b_id = connection.quote(data['B_ID'])
+		shop_nm = connection.quote(data['SHOP_NM'])
+		shop_sort = connection.quote(data['SHOP_SORT'])
+		stb_id =connection.quote(data['STB_ID'])
+		b_odr_dt = data['B_ODR_DT'].blank? ? nil : data['B_ODR_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		b_odr_dt = connection.quote(b_odr_dt)
+		b_crg_dt = data['B_CRG_DT'].blank? ? nil : data['B_CRG_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		b_crg_dt = connection.quote(b_crg_dt)
+		b_odr_st = connection.quote(data['B_ODR_ST'])
+		b_st = connection.quote(data['B_ST'])
+		b_ccl_amt = connection.quote(data['B_CCL_AMT'])
+		b_dst_amt = connection.quote(data['B_DST_AMT'])
+		b_rcb_amt = connection.quote(data['B_RCB_AMT'])
+		b_vst_cnt = connection.quote(data['B_VST_CNT'])
+		live_yn = connection.quote(data['LIVE_YN'])
+		b_crt_amt = connection.quote(data['B_CRT_AMT'])
+		b_cash_amt = connection.quote(data['B_CASH_AMT'])
+		b_etc_amt = connection.quote(data['B_ETC_AMT'])
+		gd_nm = connection.quote(data['GD_NM'])
 			
-		value = " '%{h_id}', '%{s_id}', '%{shop_id}', %{bsn_dt}, %{bsn_no}, '%{b_id}', \"%{shop_nm}\", %{shop_sort}, '%{stb_id}', %{b_odr_dt}, %{b_crg_dt}, '%{b_odr_st}', '%{b_st}', %{b_ccl_amt}, %{b_dst_amt}, %{b_rcb_amt}, %{b_vst_cnt}, '%{live_yn}', %{b_crt_amt}, %{b_cash_amt}, %{b_etc_amt}, \"%{gd_nm}\" " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], bsn_dt: bsn_dt, bsn_no: bsn_no, b_id: data['B_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, stb_id: data['STB_ID'], b_odr_dt: b_odr_dt, b_crg_dt: b_crg_dt, b_odr_st: data['B_ODR_ST'], b_st: data['B_ST'], b_ccl_amt: b_ccl_amt, b_dst_amt: b_dst_amt, b_rcb_amt: b_rcb_amt, b_vst_cnt: b_vst_cnt, live_yn: data['LIVE_YN'], b_crt_amt: b_crt_amt, b_cash_amt: b_cash_amt, b_etc_amt: b_etc_amt, gd_nm: data['GD_NM'] ]
+		value = "#{h_id}, #{s_id}, #{shop_id}, #{bsn_dt}, #{bsn_no}, #{b_id}, #{shop_nm}, #{shop_sort}, #{stb_id}, #{b_odr_dt}, #{b_crg_dt}, #{b_odr_st}, #{b_st}, #{b_ccl_amt}, #{b_dst_amt}, #{b_rcb_amt}, #{b_vst_cnt}, #{live_yn}, #{b_crt_amt}, #{b_cash_amt}, #{b_etc_amt}, #{gd_nm}"
 
 		return "%{val}" % [val: value]
 	end

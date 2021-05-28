@@ -33,17 +33,19 @@ class TbPpcSave < ApplicationRecord
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
                         result = insert(_day)
-                        Rails.logger.info result
+                        puts result
                         @@insertThread = nil
 					end
 				end
 			rescue => runtimeerror
-				Rails.logger.error "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+				result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
                 @@insertThread = nil
             ensure
-                Rails.logger.flush
+                #Rails.logger.flush
+				puts result
 			end
-
+        else
+            result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
 			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
 			#	@@insertThread.join
 			#end
@@ -58,7 +60,7 @@ class TbPpcSave < ApplicationRecord
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+			puts "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -74,17 +76,17 @@ class TbPpcSave < ApplicationRecord
 		
 		query += ';'
 
+		
 		transaction do
 			connection.exec_query(query)
 #		rescue ActiveRecord::RecordNotUnique 
 #			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
-			cnt = 0
+			puts "#{TABLE}-#{_day} Insert Error #{exception}"
+			cnt = -1
 			raise ActiveRecord::Rollback
 		ensure
             query = nil
-            Rails.logger.flush
 		end
 
 		return cnt
@@ -97,16 +99,18 @@ class TbPpcSave < ApplicationRecord
 			return false
 		end	
 		
+		log = nil
+		
 		transaction do
 			query = "DELETE FROM %{table} WHERE bsn_dt = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			log = "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+			log = "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
             raise ActiveRecord::Rollback
         ensure
-            Rails.logger.flush
+            puts log
 		end
 		
 		return result
@@ -119,18 +123,32 @@ class TbPpcSave < ApplicationRecord
 			return nil
 		end
 		
-		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-		bsn_dt = data['BSN_DT'].blank? ? 'NULL' : "'#{data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		ppce_amt = data['PPCE_AMT'].blank? ? 'NULL' : data['PPCE_AMT']
-		ppce_dt = data['PPCE_DT'].blank? ? 'NULL' : "'#{data['PPCE_DT'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		ppce_crg_cash_amt = data['PPCE_CRG_CASH_AMT'].blank? ? 'NULL' : data['PPCE_CRG_CASH_AMT']
-		ppce_crg_card_amt = data['PPCE_CRG_CARD_AMT'].blank? ? 'NULL' : data['PPCE_CRG_CARD_AMT']
-		ppce_crg_oln_amt = data['PPCE_CRG_OLN_AMT'].blank? ? 'NULL' : data['PPCE_CRG_OLN_AMT']
-		ppce_add_amt = data['PPCE_ADD_AMT'].blank? ? 'NULL' : data['PPCE_ADD_AMT']
-		ppce_use_amt = data['PPCE_USE_AMT'].blank? ? 'NULL' : data['PPCE_USE_AMT']
-		ppce_avb_amt = data['PPCE_AVB_AMT'].blank? ? 'NULL' : data['PPCE_AVB_AMT']
+		h_id = connection.quote(data['H_ID'])
+		s_id = connection.quote(data['S_ID'])
+		ppc_no = connection.quote(data['PPC_NO'])
+		ppce_no = connection.quote(data['PPCE_NO'])
+		b_id = connection.quote(data['B_ID'])
+		shop_id = connection.quote(data['SHOP_ID'])
+		shop_nm = connection.quote(data['SHOP_NM'])
+		shop_sort = connection.quote(data['SHOP_SORT'])
+		bsn_dt = data['BSN_DT'].blank? ? nil : data['BSN_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		bsn_dt = connection.quote(bsn_dt)
+		ppce_amt = connection.quote(data['PPCE_AMT'])
+		ppce_dt = data['PPCE_DT'].blank? ? nil : data['PPCE_DT'].strftime("%Y-%m-%d %H:%M:%S")
+		ppce_dt = connection.quote(ppce_dt)
+		bc_st = connection.quote(data['BC_ST'])
+		ppce_crg_cash_amt = connection.quote(data['PPCE_CRG_CASH_AMT'])
+		ppce_crg_card_amt = connection.quote(data['PPCE_CRG_CARD_AMT'])
+		ppce_crg_oln_amt = connection.quote(data['PPCE_CRG_OLN_AMT'])
+		apv = connection.quote(data['APV'])
+		ppce_apv_nb = connection.quote(data['PPCE_APV_NB'])
+		card_nm = connection.quote(data['CARD_NM'])
+		ppce_add_amt = connection.quote(data['PPCE_ADD_AMT'])
+		ppce_use_amt = connection.quote(data['PPCE_USE_AMT'])
+		ppce_avb_amt = connection.quote(data['PPCE_AVB_AMT'])
+		live_yn = connection.quote(data['LIVE_YN'])
 
-		value = " '%{h_id}', '%{s_id}', '%{ppc_no}', '%{ppce_no}', '%{b_id}', '%{shop_id}', \"%{shop_nm}\", %{shop_sort}, %{bsn_dt}, %{ppce_amt}, %{ppce_dt}, '%{bc_st}', %{ppce_crg_cash_amt}, %{ppce_crg_card_amt}, %{ppce_crg_oln_amt}, '%{apv}', '%{ppce_apv_nb}', \"%{card_nm}\", %{ppce_add_amt}, %{ppce_use_amt}, %{ppce_avb_amt}, '%{live_yn}' " % [ h_id: data['H_ID'], s_id: data['S_ID'], ppc_no: data['PPC_NO'], ppce_no: data['PPCE_NO'], b_id: data['B_ID'], shop_id: data['SHOP_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, bsn_dt: bsn_dt, ppce_amt: ppce_amt, ppce_dt: ppce_dt, bc_st: data['BC_ST'], ppce_crg_cash_amt: ppce_crg_cash_amt, ppce_crg_card_amt: ppce_crg_card_amt, ppce_crg_oln_amt: ppce_crg_oln_amt, apv: data['APV'], ppce_apv_nb: data['PPCE_APV_NB'], card_nm: data['CARD_NM'], ppce_add_amt: ppce_add_amt, ppce_use_amt: ppce_use_amt, ppce_avb_amt: ppce_avb_amt, live_yn: data['LIVE_YN'] ]
+		value = "#{h_id}, #{s_id}, #{ppc_no}, #{ppce_no}, #{b_id}, #{shop_id}, #{shop_nm}, #{shop_sort}, #{bsn_dt}, #{ppce_amt}, #{ppce_dt}, #{bc_st}, #{ppce_crg_cash_amt}, #{ppce_crg_card_amt}, #{ppce_crg_oln_amt}, #{apv}, #{ppce_apv_nb}, #{card_nm}, #{ppce_add_amt}, #{ppce_use_amt}, #{ppce_avb_amt}, #{live_yn}"
 
 		return "%{val}" % [val: value]
 	end

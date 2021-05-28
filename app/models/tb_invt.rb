@@ -30,17 +30,20 @@ class TbInvt < ApplicationRecord
 				@@insertThread = Thread.new do
 					Rails.application.executor.wrap do
                         result = insert(_day)
-                        RAils.logger.info result
+                        puts result
                         @@insertThread = nil
 					end
 				end
 			rescue => runtimeerror
-				Rails.logger.error "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+				#Rails.logger.error "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
+				result = "#{TABLE}-#{_day} RuntimeError #{runtimeerror}"
                 @@insertThread = nil
             ensure
-                Rails.logger.flush
+                #Rails.logger.flush
+				puts result
 			end
-
+        else
+            result = "#{TABLE}-#{_day} INSERTING....#{@@insertThread.status}"
 			#ActiveSupport::Dependencies.interlock.permit_concurrent_loads do
 			#	@@insertThread.join
 			#end
@@ -55,7 +58,7 @@ class TbInvt < ApplicationRecord
 		cnt = 0
 				
 		if _datas.blank?
-			Rails.logger.info "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
+			puts "#{TABLE}-#{_day} CUBE DATA CNT #{cnt}"
 			return cnt
 		end	
 		
@@ -71,17 +74,19 @@ class TbInvt < ApplicationRecord
 		
 		query += ';'
 
+		
 		transaction do
 			connection.exec_query(query)
 #		rescue ActiveRecord::RecordNotUnique 
 #			Rails.logger.error "TB_COS_DAILY Insert Error #{exception}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
-			cnt = 0
+			#Rails.logger.error "#{TABLE}-#{_day} Insert Error #{exception}"
+			puts "#{TABLE}-#{_day} Insert Error #{exception}"
+			cnt = -1
 			raise ActiveRecord::Rollback
 		ensure
             query = nil
-            Rails.logger.flush
+            #Rails.logger.flush
 		end
 
 		return cnt
@@ -94,16 +99,21 @@ class TbInvt < ApplicationRecord
 			return false
 		end	
 		
+		log = nil
+		
 		transaction do
 			query = "DELETE FROM %{table} WHERE so_date = '%{bsn_dt}' " % [table: TABLE, bsn_dt: _day]
 			cnt = connection.exec_delete(query)
-			Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			#Rails.logger.info "#{TABLE}-#{_day} deletedata #{cnt}"
+			log = "#{TABLE}-#{_day} deletedata #{cnt}"
 		rescue ActiveRecord::ActiveRecordError => exception
-			Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+			#Rails.logger.error "#{TABLE}-#{_day} deletedata Error #{exception}"
+			log = "#{TABLE}-#{_day} deletedata Error #{exception}"
 			result = false
             raise ActiveRecord::Rollback
         ensure
-            Rails.logger.flush
+            #Rails.logger.flush
+			puts log
 		end
 		
 		return result
@@ -116,20 +126,28 @@ class TbInvt < ApplicationRecord
 			return nil
 		end
 		
-		so_date = data['SO_DATE'].blank? ? 'NULL' : "'#{data['SO_DATE'].strftime("%Y-%m-%d %H:%M:%S")}'"
-		shop_sort = data['SHOP_SORT'].blank? ? 'NULL' : data['SHOP_SORT']
-		min_qty = data['MIN_QTY'].blank? ? 'NULL' : data['MIN_QTY']
-		max_qty = data['MAX_QTY'].blank? ? 'NULL' : data['MAX_QTY']
-		bsn_qty = data['BSN_QTY'].blank? ? 'NULL' : data['BSN_QTY']
-		prs_qty = data['PRS_QTY'].blank? ? 'NULL' : data['PRS_QTY']
-		srate = data['SRATE'].blank? ? 'NULL' : data['SRATE']
-		real_qty = data['REAL_QTY'].blank? ? 'NULL' : data['REAL_QTY']
-		real_amt = data['REAL_AMT'].blank? ? 'NULL' : data['REAL_AMT']
-		so_qty = data['SO_QTY'].blank? ? 'NULL' : data['SO_QTY']
-		so_amt = data['SO_AMT'].blank? ? 'NULL' : data['SO_AMT']
+		h_id = connection.quote(data['H_ID'])
+		s_id = connection.quote(data['S_ID'])
+		shop_id = connection.quote(data['SHOP_ID'])
+		gd_id = connection.quote(data['GD_ID'])
+		so_date = data['SO_DATE'].blank? ? nil : data['SO_DATE'].strftime("%Y-%m-%d %H:%M:%S")
+		so_date = connection.quote(so_date)
+		b_id = connection.quote(data['B_ID'])
+		shop_nm = connection.quote(data['SHOP_NM'])
+		shop_sort = connection.quote(data['SHOP_SORT'])
+		gd_nm = connection.quote(data['GD_NM'])
+		unit_id = connection.quote(data['UNIT_ID'])
+		min_qty = connection.quote(data['MIN_QTY'])
+		max_qty = connection.quote(data['MAX_QTY'])
+		bsn_qty = connection.quote(data['BSN_QTY'])
+		prs_qty = connection.quote(data['PRS_QTY'])
+		srate = connection.quote(data['SRATE'])
+		real_qty = connection.quote(data['REAL_QTY'])
+		real_amt = connection.quote(data['REAL_AMT'])
+		so_qty = connection.quote(data['SO_QTY'])
+		so_amt = connection.quote(data['SO_AMT'])
 
-		value = "'%{h_id}', '%{s_id}', '%{shop_id}', '%{gd_id}', %{so_date}, '%{b_id}', \"%{shop_nm}\", %{shop_sort}, \"%{gd_nm}\", '%{unit_id}', %{min_qty}, %{max_qty}, %{bsn_qty}, %{prs_qty}, %{srate}, %{real_qty}, %{real_amt}, %{so_qty}, %{so_amt} " % [ h_id: data['H_ID'], s_id: data['S_ID'], shop_id: data['SHOP_ID'], gd_id: data['GD_ID'], so_date: so_date, b_id: data['B_ID'], shop_nm: data['SHOP_NM'], shop_sort: shop_sort, gd_nm: data['GD_NM'], unit_id: data['UNIT_ID'], min_qty: min_qty, max_qty: max_qty, bsn_qty: bsn_qty, prs_qty: prs_qty, srate: srate, real_qty: real_qty, real_amt: real_amt, so_qty: so_qty, so_amt: so_amt ]
-
+		value = "#{h_id}, #{s_id}, #{shop_id}, #{gd_id}, #{so_date}, #{b_id}, #{shop_nm}, #{shop_sort}, #{gd_nm}, #{unit_id}, #{min_qty}, #{max_qty}, #{bsn_qty}, #{prs_qty}, #{srate}, #{real_qty}, #{real_amt}, #{so_qty}, #{so_amt}"
 		return "%{val}" % [val: value]
 	end
 end
